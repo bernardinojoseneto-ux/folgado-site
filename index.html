@@ -565,8 +565,9 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
         <dl class="sum" id="sum"></dl>
         <div class="pair" id="pair"></div>
         <p class="fine" id="resHow"></p>
-        <button type="button" class="cta" id="btnShare" hidden>Enviar pelo WhatsApp (com as imagens)</button>
         <a class="cta" id="btnWa" href="#" target="_blank" rel="noopener" style="text-align:center;display:flex;align-items:center;justify-content:center;text-decoration:none">Abrir WhatsApp com o pedido</a>
+        <button type="button" class="cta" id="btnShare" hidden>2. Enviar as imagens</button>
+        <a class="fine" id="btnVcf" href="#" download="folgado.vcf" hidden style="text-align:center">Salvar o número da Folgado nos contatos</a>
         <p class="err" id="resWarn" style="font-size:14px">Sem as imagens a gente não consegue montar a prévia do seu pedido.</p>
         <div class="row" id="downs"></div>
       </div>
@@ -1346,12 +1347,13 @@ $("finalizar").addEventListener("click",async()=>{
   window._files=files;window._msg=msg;
   {const can=!!(files.length&&navigator.canShare&&navigator.canShare({files})),wa=$("btnWa");
    $("btnShare").hidden=!can;
-   $("resHow").innerHTML=can?"<b>Toque no botão laranja</b>, escolha o WhatsApp e envie: o pedido e as imagens vão juntos. Se o WhatsApp abrir só com as imagens, cole o texto do pedido (copiamos para você).":"<b>1.</b> Baixe as imagens abaixo (no celular, toque e segure sobre cada uma). <b>2.</b> Abra o WhatsApp com o pedido. <b>3.</b> Anexe todas as imagens na conversa. A gente responde com a prévia para você aprovar.";
-   wa.className=can?"btn2":"cta";wa.textContent=can?"Enviar só o texto (sem as imagens)":"Abrir WhatsApp com o pedido";
+   $("resHow").innerHTML=can?"<b>São dois toques.</b> <b>1.</b> Abra a conversa com a Folgado e envie o pedido. <b>2.</b> Volte aqui e toque em “Enviar as imagens”: escolha a Folgado, que já aparece no topo da lista do WhatsApp, e envie.":"<b>1.</b> Baixe as imagens abaixo (no celular, toque e segure sobre cada uma). <b>2.</b> Abra o WhatsApp com o pedido. <b>3.</b> Anexe todas as imagens na conversa. A gente responde com a prévia para você aprovar.";
+   wa.textContent=can?"1. Abrir conversa e enviar o pedido":"Abrir WhatsApp com o pedido";
+   {const v=$("btnVcf");v.hidden=!can||!WHATSAPP;if(WHATSAPP)v.href="data:text/vcard;charset=utf-8,"+encodeURIComponent("BEGIN:VCARD\nVERSION:3.0\nFN:Folgado Camisaria\nORG:Folgado Camisaria\nTEL;TYPE=CELL:+"+WHATSAPP+"\nEND:VCARD")}
    $("resWarn").hidden=can}
   $("res").hidden=false;$("res").scrollIntoView({behavior:"smooth",block:"start"});
 });
-$("btnShare").addEventListener("click",async()=>{try{if(navigator.clipboard)navigator.clipboard.writeText(window._msg||"").catch(()=>{})}catch(e){}try{await navigator.share({files:window._files,text:window._msg||"Meu pedido na Folgado"})}catch(e){}});
+$("btnShare").addEventListener("click",async()=>{try{await navigator.share({files:window._files})}catch(e){}});
 
 /* ===== Início ===== */
 $("txt").value=S.texto;
