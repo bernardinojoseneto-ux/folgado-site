@@ -103,7 +103,7 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 #cv{cursor:grab}#cv.drag{cursor:grabbing}
 
 /* ===== site (prefixo lj-) ===== */
-:root{--hero:#D9CDB4;--wall:#D9CDB4;--deep:#1F1813;--deep-tx:#D9CDB4;--accent-ink:#C25A14;--band:var(--surface);--w0:#D9CDB4;--w1:#D9CDB4;--w2:#D9CDB4;--w3:#D9CDB4}
+:root{--pop:#0A7F70;--hero:#D9CDB4;--wall:#D9CDB4;--deep:#1F1813;--deep-tx:#D9CDB4;--accent-ink:#C25A14;--band:var(--surface);--w0:#D9CDB4;--w1:#D9CDB4;--w2:#D9CDB4;--w3:#D9CDB4}
 [hidden]{display:none!important}
 .lj-wrap{max-width:1180px;margin:0 auto;padding:0 20px}
 .lj-ann{background:var(--deep);color:var(--bg);text-align:center;font:700 12px/1.3 var(--body);letter-spacing:.08em;text-transform:uppercase;padding:9px 12px;margin-inline:-16px}
@@ -152,11 +152,13 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 .lj-tile span{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(245,237,221,.94);border-radius:12px;padding:10px 12px;font:700 14px/1.2 var(--body);display:flex;justify-content:space-between;gap:8px}
 .lj-tile small{display:block;font-weight:400;color:#5b5145;font-size:12px}
 /* filtros */
-.lj-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
-.lj-bar .sep{width:1px;height:26px;background:var(--line);margin:0 4px}
+.lj-bar{display:flex;gap:14px 26px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px}
+.lj-fg{display:flex;flex-direction:column;gap:7px;min-width:0}.lj-fl{font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lj-chips{display:flex;gap:8px;flex-wrap:wrap}
+.lj-seg{display:inline-flex;background:var(--surface);border:1.5px solid var(--line);border-radius:99px;padding:3px}.lj-seg .lj-chip{border:0;min-height:36px;background:transparent}.lj-seg .lj-chip[aria-pressed="true"]{background:var(--accent);color:#1F1813;box-shadow:none}
 .lj-chip{border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:99px;padding:0 15px;min-height:40px;font:700 13px/1 var(--body);cursor:pointer}
-.lj-chip[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
-.lj-count{margin-left:auto;font-size:13px;color:var(--muted)}
+.lj-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.lj-count{margin-left:auto;font-size:13px;color:var(--muted);align-self:flex-end;padding-bottom:12px}
 /* produtos */
 .lj-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;align-items:start}@media(min-width:760px){.lj-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 18px}}@media(min-width:1040px){.lj-cards{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .lj-card{display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -250,6 +252,8 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 .lj-faq summary::-webkit-details-marker{display:none}.lj-faq summary::after{content:"+";font-size:22px;color:var(--muted)}.lj-faq details[open] summary::after{content:"−"}
 .lj-faq details p{padding:0 4px 16px;color:var(--muted);font-size:15px;line-height:1.55}
 /* preço de/por */
+.lj-lan{display:inline-block;background:var(--pop);color:#fff;font:700 9.5px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;padding:4px 7px;border-radius:99px;margin-bottom:5px}.lj-pm .lj-lan{margin:0 2px 0 0;align-self:center}
+.lj-pw .lj-preco,.lj-pm .lj-preco{color:var(--accent-ink)}
 .lj-pw{flex:none;text-align:right}.lj-de{display:block;font:500 12.5px/1.2 var(--body);color:var(--muted);text-decoration:line-through;white-space:nowrap}
 .lj-pm{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:10px}.lj-pm .lj-de{display:inline;font-size:15px}.lj-pm .lj-preco{font-size:28px}
 .lj-off{background:var(--accent);color:#1F1813;font:700 12px/1 var(--body);border-radius:99px;padding:5px 9px;align-self:center}
@@ -281,7 +285,7 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 .lj-tbl{width:100%;border-collapse:collapse;font-size:13px}.lj-tbl th,.lj-tbl td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line)}.lj-tbl th{color:var(--muted);font-weight:600}
 .lj-tam details summary{cursor:pointer;font:700 13.5px var(--body);min-height:40px;display:flex;align-items:center}
 .lj-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1F1813;color:#F5EDDD;border-radius:99px;padding:13px 20px;font:700 14px var(--body);z-index:80;box-shadow:0 8px 30px rgba(0,0,0,.3)}
-:root{color-scheme:light;--bg:#FFFBF2;--surface:#FFF3DF;--line:#EBDDBF;--ink:#2A1B12;--muted:#6B5B4C;--accent:#F26B1D;--accent-ink:#C2410C;--hero:#FFCB47;--band:#FFE6B0;--deep:#2A1B12;--deep-tx:#F6DDB0;--wall:#FFE0A0;--w0:#FFCB47;--w1:#FF9B73;--w2:#7FD1BF;--w3:#FFB3C1}</style></head><body>
+:root{color-scheme:light;--bg:#FFFBF2;--surface:#FFF3DF;--line:#EBDDBF;--ink:#2A1B12;--muted:#6B5B4C;--accent:#F26B1D;--accent-ink:#C2410C;--pop:#0A7F70;--hero:#FFCB47;--band:#FFE6B0;--deep:#2A1B12;--deep-tx:#F6DDB0;--wall:#FFE0A0;--w0:#FFCB47;--w1:#FF9B73;--w2:#7FD1BF;--w3:#FFB3C1}</style></head><body>
 <header class="lj-sn"><div class="lj-wrap"><button type="button" class="lj-logo" data-tab="loja" aria-label="Folgado Camisaria, início">folgado<i></i></button>
 <nav aria-label="Abas" role="tablist"><button type="button" role="tab" data-tab="loja" aria-current="page">Loja</button><button type="button" role="tab" data-tab="monte" class="lj-cta-n">Monte a sua</button></nav>
 <button type="button" class="lj-cartbtn" id="lj-cartbtn" aria-label="Abrir carrinho"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg><span>Carrinho</span><b id="lj-cartn" data-n="0">0</b></button></div></header>
@@ -331,9 +335,8 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 <section id="lj-colecao" style="padding-top:34px"><div class="lj-wrap">
   <div class="lj-head"><div><p class="lj-eyebrow">camisetas prontas</p><h2 style="margin-top:8px">escolha a sua.</h2></div></div>
   <div class="lj-bar" id="lj-bar" role="group" aria-label="Filtros">
-    <button class="lj-chip" data-k="tipo" data-v="todas" aria-pressed="true">Todas</button><button class="lj-chip" data-k="tipo" data-v="frente" aria-pressed="false">Na frente</button><button class="lj-chip" data-k="tipo" data-v="costas" aria-pressed="false">Nas costas</button><button class="lj-chip" data-k="tipo" data-v="combo" aria-pressed="false">Frente e costas</button>
-    <span class="sep"></span>
-    <button class="lj-chip" data-k="mod" data-v="oversized" aria-pressed="true">Oversized</button><button class="lj-chip" data-k="mod" data-v="normal" aria-pressed="false">Normal</button>
+    <div class="lj-fg"><span class="lj-fl">Onde fica a estampa</span><div class="lj-chips"><button class="lj-chip" data-k="tipo" data-v="todas" aria-pressed="true">Todas</button><button class="lj-chip" data-k="tipo" data-v="frente" aria-pressed="false">Na frente</button><button class="lj-chip" data-k="tipo" data-v="costas" aria-pressed="false">Nas costas</button><button class="lj-chip" data-k="tipo" data-v="combo" aria-pressed="false">Frente e costas</button></div></div>
+    <div class="lj-fg"><span class="lj-fl">Modelo</span><div class="lj-seg"><button class="lj-chip" data-k="mod" data-v="oversized" aria-pressed="true">Oversized</button><button class="lj-chip" data-k="mod" data-v="normal" aria-pressed="false">Normal</button></div></div>
     <span class="lj-count" id="lj-count"></span>
   </div>
   <div class="lj-cards" id="lj-cards"></div>
@@ -533,6 +536,7 @@ const FOLGADO = {
   prazo: "",                   // ex.: "Entrega em até 2 dias úteis". Vazio = "combinado no WhatsApp"
   preco: 59.9,                 // preço padrão (EXEMPLO, troque pelo real). null = "valor no zap". Cada estampa pode ter o seu "preco" no CATALOGO.
   precoDe: 79.9,               // preço "de" (riscado) mostrado ao lado do preço de hoje. null = não mostra. Use um valor real de referência.
+  rotuloPromo: "lançamento",   // texto do selo ao lado do preço riscado
   cupom: { codigo: "PRIMEIRA10", pct: 10 }   // cupom de primeira compra (aparece em pop-up toda vez que o site abre)
 };
 /* Avaliações REAIS de clientes. Só preencha depois de receber o retorno de verdade.
@@ -941,7 +945,7 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   const preco=p=>typeof p.preco==="number"?p.preco:(typeof F.preco==="number"?F.preco:null);
   const precoDe=p=>{const d=typeof p.precoDe==="number"?p.precoDe:F.precoDe,pr=preco(p);return typeof d==="number"&&pr!=null&&d>pr?d:null};
   const off=p=>{const d=precoDe(p),pr=preco(p);return d?Math.round((1-pr/d)*100):0};
-  const precoHTML=p=>{const pr=preco(p),d=precoDe(p);if(pr==null)return '<div class="lj-preco lj-sem">valor no zap</div>';return (d?'<s class="lj-de">'+brl(d)+'</s>':'')+'<div class="lj-preco">'+brl(pr)+'</div>'};
+  const precoHTML=p=>{const pr=preco(p),d=precoDe(p);if(pr==null)return '<div class="lj-preco lj-sem">valor no zap</div>';return (d?'<span class="lj-lan">'+esc(F.rotuloPromo||"lançamento")+'</span><s class="lj-de">'+brl(d)+'</s>':'')+'<div class="lj-preco">'+brl(pr)+'</div>'};
   const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const img=(p,mod,cor,i=0)=>((p.imagens[mod+"_"+cor]||[])[i])||"";
@@ -1061,7 +1065,7 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   function abreProduto(p,mod,cor){
     const st={mod,cor,tam:"M",q:1,lado:0,zoom:false},pr=preco(p),box=$i("lj-prodbox");
     box.innerHTML='<button type="button" class="lj-x" aria-label="Fechar">×</button><div class="lj-prod"><div class="lj-gal" id="lj-gal"><div class="lj-gi"><img alt=""><svg class="lj-zm" id="lj-zm" viewBox="0 0 1080 1150" aria-hidden="true"></svg><button type="button" class="lj-zh" data-z="1">ver zoom da estampa</button><div class="lj-thumbs" hidden></div></div></div><div class="lj-pd">'+
-      '<div><p class="lj-eyebrow">'+TIPO[p.tipo]+'</p><h2 style="margin-top:8px">'+esc(p.nome)+'</h2><div class="lj-fr" style="font-size:17px">'+esc(p.frase)+'</div>'+(pr==null?'<div class="lj-preco lj-sem" style="margin-top:10px;text-align:left">Valor combinado no WhatsApp</div>':'<div class="lj-pm">'+(precoDe(p)?'<s class="lj-de">'+brl(precoDe(p))+'</s>':'')+'<b class="lj-preco">'+brl(pr)+'</b>'+(precoDe(p)?'<span class="lj-off">−'+off(p)+'%</span>':'')+'</div>')+'</div>'+
+      '<div><p class="lj-eyebrow">'+TIPO[p.tipo]+'</p><h2 style="margin-top:8px">'+esc(p.nome)+'</h2><div class="lj-fr" style="font-size:17px">'+esc(p.frase)+'</div>'+(pr==null?'<div class="lj-preco lj-sem" style="margin-top:10px;text-align:left">Valor combinado no WhatsApp</div>':'<div class="lj-pm">'+(precoDe(p)?'<span class="lj-lan">'+esc(F.rotuloPromo||"lançamento")+'</span><s class="lj-de">'+brl(precoDe(p))+'</s>':'')+'<b class="lj-preco">'+brl(pr)+'</b>'+(precoDe(p)?'<span class="lj-off">−'+off(p)+'%</span>':'')+'</div>')+'</div>'+
       '<div><span class="lab">Modelo</span><div class="lj-row" data-g="mod"><button class="lj-chip" data-v="oversized">Oversized</button><button class="lj-chip" data-v="normal">Normal</button></div></div>'+
       '<div><span class="lab">Cor</span><div class="lj-row" data-g="cor"><button class="lj-chip" data-v="preta">Preta</button><button class="lj-chip" data-v="branca">Branca</button></div></div>'+
       '<div><span class="lab">Tamanho</span><div class="lj-row" data-g="tam"><button class="lj-chip" data-v="P">P</button><button class="lj-chip" data-v="M">M</button><button class="lj-chip" data-v="G">G</button><button class="lj-chip" data-v="GG">GG</button></div><button type="button" class="lj-find" data-tam="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21Z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg>Descubra seu tamanho</button></div>'+
