@@ -252,6 +252,31 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 .lj-faq details{border-bottom:1px solid var(--line)}.lj-faq summary{list-style:none;cursor:pointer;padding:16px 4px;font:600 16px var(--body);display:flex;justify-content:space-between;gap:12px;min-height:48px;align-items:center}
 .lj-faq summary::-webkit-details-marker{display:none}.lj-faq summary::after{content:"+";font-size:22px;color:var(--muted)}.lj-faq details[open] summary::after{content:"−"}
 .lj-faq details p{padding:0 4px 16px;color:var(--muted);font-size:15px;line-height:1.55}
+/* descubra seu tamanho */
+#lj-ovt{z-index:70}
+.lj-find{display:inline-flex;align-items:center;gap:8px;margin-top:10px;background:none;border:0;padding:0;min-height:40px;color:var(--ink);font:700 13.5px var(--body);text-decoration:underline;cursor:pointer}
+.lj-find svg{width:20px;height:20px;color:var(--accent);flex:none}
+.lj-tam{max-width:880px;display:grid;grid-template-columns:1fr}
+@media(min-width:820px){.lj-tam{grid-template-columns:.8fr 1.2fr}}
+.lj-tam .im{display:none;background:#D9CDB4;position:relative}.lj-tam .im img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+@media(min-width:820px){.lj-tam .im{display:block}}
+.lj-tam .rt{padding:26px 22px;display:flex;flex-direction:column;gap:16px}
+.lj-tam h2{font-size:clamp(26px,5vw,34px)!important}
+.lj-tam .lab{font:700 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px}
+.lj-fld{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.lj-fld label{display:block;font:700 11px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lj-fld input{width:100%;margin-top:6px;border:1.5px solid var(--line);border-radius:12px;padding:12px 10px;font:600 16px var(--body);background:var(--bg);color:var(--ink)}
+.lj-res{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.lj-big{width:92px;height:92px;border-radius:18px;background:var(--bg);border:2px solid var(--ink);display:grid;place-items:center;font:600 46px/1 var(--display);position:relative}
+.lj-big i{position:absolute;right:-9px;top:-9px;width:26px;height:26px;border-radius:50%;background:#2F6B3A;color:#fff;display:grid;place-items:center;font:700 14px/1 var(--body);font-style:normal}
+.lj-res p{margin:0}.lj-res .t{font:700 12px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.lj-res .d{font:600 17px/1.25 var(--body)}.lj-res .s{font-size:13.5px;color:var(--muted);margin-top:4px}
+.lj-wait{background:var(--surface);border:1px dashed var(--line);border-radius:18px;padding:18px;color:var(--muted);font-size:15px}
+.lj-alt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.lj-alt div{border:1.5px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;font:700 16px var(--body)}.lj-alt div small{display:block;font:500 11.5px/1.2 var(--body);color:var(--muted);margin-top:4px}
+.lj-alt div.on{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.lj-tbl{width:100%;border-collapse:collapse;font-size:13px}.lj-tbl th,.lj-tbl td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--line)}.lj-tbl th{color:var(--muted);font-weight:600}
+.lj-tam details summary{cursor:pointer;font:700 13.5px var(--body);min-height:40px;display:flex;align-items:center}
 .lj-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#1F1813;color:#F5EDDD;border-radius:99px;padding:13px 20px;font:700 14px var(--body);z-index:80;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 </style></head><body>
 <header class="lj-sn"><div class="lj-wrap"><button type="button" class="lj-logo" data-tab="loja" aria-label="Folgado Camisaria, início">folgado<i></i></button>
@@ -334,6 +359,7 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 
 <a class="lj-wa" id="lj-wa" target="_blank" rel="noopener" aria-label="Falar com a Folgado no WhatsApp" title="Falar no WhatsApp" hidden><svg viewBox="0 0 32 32" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4.5a11.5 11.5 0 0 0-9.9 17.3L4.5 27.5l5.9-1.5A11.5 11.5 0 1 0 16 4.5Z"/><path d="M12.2 10.4c.3-.5.8-.5 1.1-.2l1.2 1.7c.2.4.1.8-.2 1.1l-.6.6c.9 1.7 2.2 3 3.9 3.9l.6-.6c.3-.3.7-.4 1.1-.2l1.7 1.2c.4.3.4.8 0 1.2-1.1 1.4-2.8 1.6-4.4.9-3-1.2-5.2-3.6-6.2-6.2-.5-1.2-.2-2.5.8-3.4Z" fill="#fff" stroke="none"/></svg></a>
 <div class="lj-ov" id="lj-ovd" hidden><div class="lj-box lj-pop" role="dialog" aria-modal="true" aria-label="Cupom de primeira compra" id="lj-popbox"></div></div>
+<div class="lj-ov" id="lj-ovt" hidden><div class="lj-box" role="dialog" aria-modal="true" aria-label="Descubra seu tamanho" id="lj-tambox"></div></div>
 <div id="lj-monte" hidden><main class="app">
   <section class="stage-wrap" aria-label="Prévia da camiseta">
     <div class="stage">
@@ -990,13 +1016,48 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
         :'<div class="lj-rvempty">Ainda não tem avaliação desta camiseta. Já pediu a sua? '+(zap?'<a href="'+zap+'" target="_blank" rel="noopener">Conte pra gente pelo WhatsApp</a> e a gente coloca aqui.':'Conte pra gente e a gente coloca aqui.')+'</div>')+'</div>'+
       '<div class="lj-sec lj-faq"><p class="lj-eyebrow">perguntas</p><h3>você pergunta, a gente responde</h3>'+Q.map(q=>'<details><summary>'+q[0]+'</summary><p>'+q[1]+'</p></details>').join("")+'</div></div>';
   }
+  /* descubra seu tamanho (medidas da camiseta e ajuste são PROVISÓRIOS até chegar a tabela do fornecedor) */
+  const TG={normal:{P:96,M:102,G:108,GG:114},oversized:{P:112,M:118,G:124,GG:130}};
+  const TF={normal:{justo:4,meu:8,folgado:14},oversized:{justo:12,meu:20,folgado:28}};
+  const PREF={justo:"Mais justa",meu:"Do meu jeito",folgado:"Mais folgada"};
+  function tamCalc(mod,alt,peso,peito,pref){
+    const body=peito||(8.5+0.5*peso+0.3*alt),tg=TF[mod][pref];let best=null;const all=Object.keys(TG[mod]).map(k=>{const ease=TG[mod][k]-body,d=ease-tg;return{k,d,lab:Math.abs(d)<=3?"ideal":d>8?"bem folgada":d>3?"levemente folgada":d<-8?"justa demais":"levemente justa"}});
+    all.forEach(a=>{if(!best||Math.abs(a.d)<Math.abs(best.d))best=a});return{body,best,all,fora:Math.abs(best.d)>12}}
+  function abreTamanho(p,st,apply){
+    const ov=$i("lj-ovt"),bx=$i("lj-tambox");let M={alt:"",peso:"",peito:"",pref:"meu"},mod=st.mod;
+    try{Object.assign(M,JSON.parse(localStorage.getItem("folgado-medidas")||"{}"))}catch(e){}
+    bx.innerHTML='<button type="button" class="lj-x" aria-label="Fechar">×</button><div class="lj-tam"><div class="im"><img alt="" src="'+img(p,st.mod,st.cor,0)+'"></div><div class="rt"><div><p class="lj-eyebrow">provador</p><h2 style="margin-top:8px">descubra seu tamanho</h2></div>'+
+      '<div class="lj-fld"><label>Altura (cm)<input id="lj-ta" type="number" inputmode="numeric" min="140" max="210" placeholder="175" value="'+esc(M.alt)+'"></label><label>Peso (kg)<input id="lj-tp" type="number" inputmode="numeric" min="35" max="200" placeholder="75" value="'+esc(M.peso)+'"></label><label>Peito (cm)<input id="lj-tc" type="number" inputmode="numeric" min="70" max="150" placeholder="opcional" value="'+esc(M.peito)+'"></label></div>'+
+      '<div><span class="lab">Modelo</span><div class="lj-row" data-gm><button type="button" class="lj-chip" data-m="oversized">Oversized</button><button type="button" class="lj-chip" data-m="normal">Normal</button></div></div>'+
+      '<div><span class="lab">Como você gosta de vestir</span><div class="lj-row" data-gp>'+Object.keys(PREF).map(k=>'<button type="button" class="lj-chip" data-p="'+k+'">'+PREF[k]+'</button>').join("")+'</div></div>'+
+      '<div id="lj-tr"></div><button type="button" class="lj-btn lj-pri" id="lj-tuse" hidden></button>'+
+      '<details><summary>Ver medidas da camiseta</summary><table class="lj-tbl"><tr><th></th><th>P</th><th>M</th><th>G</th><th>GG</th></tr><tr><td>Normal</td>'+Object.keys(TG.normal).map(k=>'<td>'+TG.normal[k]+'</td>').join("")+'</tr><tr><td>Oversized</td>'+Object.keys(TG.oversized).map(k=>'<td>'+TG.oversized[k]+'</td>').join("")+'</tr></table><p class="lj-muted" style="font-size:12.5px;margin:8px 0 0">Contorno do peito da camiseta, em cm. Medidas de referência, ainda sendo confirmadas com a produção.</p></details>'+
+      '<p class="lj-muted" style="font-size:12.5px;margin:0">É uma estimativa. Em dúvida entre dois tamanhos, chame no WhatsApp que a gente ajuda.</p></div></div>';
+    let cur=null;
+    const draw=()=>{
+      bx.querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===mod)));bx.querySelectorAll("[data-p]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p===M.pref)));
+      const a=+M.alt,w=+M.peso,c=+M.peito,okc=c>=70&&c<=150,okb=a>=140&&a<=210&&w>=35&&w<=200,R=$i("lj-tr"),U=$i("lj-tuse");
+      if(!okc&&!okb){R.innerHTML='<div class="lj-wait">Preencha altura e peso (ou só a medida do peito) para ver o tamanho ideal.</div>';U.hidden=true;cur=null;return}
+      const r=tamCalc(mod,a,w,okc?c:0,M.pref);cur=r.best.k;
+      R.innerHTML='<div class="lj-res"><div class="lj-big">'+r.best.k+'<i>✓</i></div><div><p class="t">melhor opção</p><p class="d">'+(r.fora?'Está fora da nossa grade, chame no WhatsApp':'Fica '+r.best.lab+' em você')+'</p><p class="s">Peito estimado: '+Math.round(r.body)+' cm'+(okc?' (informado)':'')+'</p></div></div><span class="lab" style="margin:14px 0 8px">Prove também</span><div class="lj-alt">'+r.all.map(x=>'<div class="'+(x.k===r.best.k?'on':'')+'">'+x.k+'<small>'+x.lab+'</small></div>').join("")+'</div>';
+      U.hidden=false;U.textContent="Usar o tamanho "+r.best.k;
+    };
+    bx.oninput=e=>{const m={"lj-ta":"alt","lj-tp":"peso","lj-tc":"peito"}[e.target.id];if(!m)return;M[m]=e.target.value;try{localStorage.setItem("folgado-medidas",JSON.stringify(M))}catch(x){}draw()};
+    bx.onclick=e=>{
+      if(e.target.closest(".lj-x")){ov.hidden=true;return}
+      const m=e.target.closest("[data-m]");if(m){mod=m.dataset.m;draw();return}
+      const pf=e.target.closest("[data-p]");if(pf){M.pref=pf.dataset.p;try{localStorage.setItem("folgado-medidas",JSON.stringify(M))}catch(x){}draw();return}
+      if(e.target.closest("#lj-tuse")&&cur){apply(mod,cur);ov.hidden=true;toast("Tamanho "+cur+" selecionado")}
+    };
+    ov.hidden=false;bx.scrollTop=0;draw();setTimeout(()=>{const f=$i("lj-ta");f&&!f.value&&f.focus()},40);
+  }
   function abreProduto(p,mod,cor){
     const st={mod,cor,tam:"M",q:1,lado:0,zoom:false},pr=preco(p),box=$i("lj-prodbox");
     box.innerHTML='<button type="button" class="lj-x" aria-label="Fechar">×</button><div class="lj-prod"><div class="lj-gal" id="lj-gal"><div class="lj-gi"><img alt=""><svg class="lj-zm" id="lj-zm" viewBox="0 0 1080 1150" aria-hidden="true"></svg><button type="button" class="lj-zh" data-z="1">ver zoom da estampa</button><div class="lj-thumbs" hidden></div></div></div><div class="lj-pd">'+
       '<div><p class="lj-eyebrow">'+TIPO[p.tipo]+'</p><h2 style="margin-top:8px">'+esc(p.nome)+'</h2><div class="lj-fr" style="font-size:17px">'+esc(p.frase)+'</div><div class="lj-preco'+(pr==null?' lj-sem':'')+'" style="margin-top:10px;text-align:left">'+(pr==null?'Valor combinado no WhatsApp':brl(pr))+'</div></div>'+
       '<div><span class="lab">Modelo</span><div class="lj-row" data-g="mod"><button class="lj-chip" data-v="oversized">Oversized</button><button class="lj-chip" data-v="normal">Normal</button></div></div>'+
       '<div><span class="lab">Cor</span><div class="lj-row" data-g="cor"><button class="lj-chip" data-v="preta">Preta</button><button class="lj-chip" data-v="branca">Branca</button></div></div>'+
-      '<div><span class="lab">Tamanho</span><div class="lj-row" data-g="tam"><button class="lj-chip" data-v="P">P</button><button class="lj-chip" data-v="M">M</button><button class="lj-chip" data-v="G">G</button><button class="lj-chip" data-v="GG">GG</button></div></div>'+
+      '<div><span class="lab">Tamanho</span><div class="lj-row" data-g="tam"><button class="lj-chip" data-v="P">P</button><button class="lj-chip" data-v="M">M</button><button class="lj-chip" data-v="G">G</button><button class="lj-chip" data-v="GG">GG</button></div><button type="button" class="lj-find" data-tam="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 17 3l4 4L7 21Z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/></svg>Descubra seu tamanho</button></div>'+
       '<div class="lj-row" style="align-items:center"><div class="lj-qty"><button type="button" data-q="-1" aria-label="Menos">−</button><b id="lj-pq">1</b><button type="button" data-q="1" aria-label="Mais">+</button></div><button type="button" class="lj-btn lj-pri" id="lj-addc" style="flex:1">Adicionar ao carrinho</button></div>'+
       '<div class="lj-tip">Prefere outra estampa? <button type="button" data-tab="monte">Monte a sua</button>: texto, figura ou sua arte.</div></div></div>'+mais(p);
     const im=box.querySelector(".lj-gi>img"),th=box.querySelector(".lj-thumbs");
@@ -1005,6 +1066,7 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
       ["mod","cor","tam"].forEach(g=>box.querySelectorAll('[data-g="'+g+'"] .lj-chip').forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===st[g]))));$i("lj-pq").textContent=st.q};
     box.onclick=function(e){
       if(e.target.closest(".lj-x")){fecha($i("lj-ovp"));return}
+      if(e.target.closest("[data-tam]")){abreTamanho(p,st,(m,t)=>{st.mod=m;st.tam=t;upd()});return}
       if(e.target.closest("[data-z]")){st.zoom=!st.zoom;upd();return}
       const t=e.target.closest("[data-tab]");if(t){fecha($i("lj-ovp"));return}
       const c=e.target.closest(".lj-chip");if(c){st[c.parentNode.dataset.g]=c.dataset.v;upd();return}
@@ -1052,7 +1114,8 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   });
   /* fechar com Esc ou clicando fora */
   [["lj-ovp"],["lj-ovc"],["lj-ovd"]].forEach(([id])=>{const o=$i(id);o.addEventListener("click",e=>{if(e.target===o)fecha(o)})});
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"){[$i("lj-ovp"),$i("lj-ovc"),$i("lj-ovd")].forEach(o=>{if(!o.hidden)fecha(o)})}});
+  $i("lj-ovt").addEventListener("click",e=>{if(e.target===$i("lj-ovt"))$i("lj-ovt").hidden=true});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$i("lj-ovt").hidden){$i("lj-ovt").hidden=true;return}[$i("lj-ovp"),$i("lj-ovc"),$i("lj-ovd")].forEach(o=>{if(!o.hidden)fecha(o)})}});
   let tt;function toast(m){let t=$q(".lj-toast");if(t)t.remove();t=el("div","lj-toast",esc(m));t.setAttribute("role","status");document.body.append(t);clearTimeout(tt);tt=setTimeout(()=>t.remove(),1800)}
   /* pop-up do cupom: aparece toda vez que o site abre */
   $i("lj-popbox").innerHTML='<button type="button" class="lj-x" aria-label="Fechar">×</button><p class="lj-eyebrow">primeira compra</p><h2>'+CP.pct+'% de <em>folga</em> no primeiro pedido.</h2><p>Use o cupom abaixo no carrinho. É só aceitar que a gente já aplica por você.</p><div class="lj-code">'+CP.codigo+'</div><button type="button" class="lj-btn lj-org" data-pop="usar">Usar meu cupom</button><button type="button" class="lj-no" data-pop="fechar">agora não</button><span class="lj-small">Vale para a primeira compra. A gente confere pelo WhatsApp.</span>';
