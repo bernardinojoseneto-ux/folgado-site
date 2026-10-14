@@ -59,6 +59,8 @@ h1{font:600 clamp(32px,6vw,44px)/1.05 var(--display);letter-spacing:-1px;margin:
 textarea{width:100%;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);padding:12px 14px;resize:vertical;min-height:84px;font-size:18px;line-height:1.35}
 input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);padding:12px 14px;min-height:46px}
 .hint{font-size:13px;color:var(--muted);margin:6px 0 0}
+.cntrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.cnt{font-weight:700;white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}.cnt.cheio{color:#B4531A}
+.cnt.fld{display:block;text-align:right;font-size:12px;margin-top:4px}
 .fontbtn{border:1.5px solid var(--line);background:transparent;border-radius:14px;padding:6px 14px;min-height:48px;font-size:22px;line-height:1.1;flex:1 1 120px}
 .fontbtn small{display:block;font:700 10px/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:3px}
 .fontbtn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
@@ -471,8 +473,8 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
       <div id="p-texto" class="row" style="flex-direction:column;gap:14px">
         <div>
           <label class="lab" for="txt">Seu texto</label>
-          <textarea id="txt" maxlength="70" rows="2" placeholder="escreva aqui"></textarea>
-          <p class="hint">Até 3 linhas. Aperte Enter para trocar de linha.</p>
+          <textarea id="txt" maxlength="22" rows="2" placeholder="escreva aqui" aria-describedby="txtCnt"></textarea>
+          <p class="hint cntrow"><span>Até 3 linhas (Enter troca de linha).</span><b id="txtCnt" class="cnt" aria-live="polite"></b></p>
         </div>
         <div>
           <span class="lab">Ideias para começar</span>
@@ -639,7 +641,7 @@ const CATALOGO = [{"id": "01-caju", "nome": "caju", "frase": "doce do jeito que 
 const WHATSAPP = FOLGADO.whatsapp;          // número com DDI+DDD, só dígitos. ex.: "5585999999999"
 const TAMANHOS = ["P","M","G","GG"];
 const IDEIAS = [
-  ["Frases","hoje não tem pressa.","segunda é só um nome.","o relógio que espere.","dia de folga, todo dia.","sem pressa, sem culpa","só mais cinco minutinhos"],
+  ["Frases","hoje não tem pressa.","segunda é só um nome.","o relógio que espere.","dia de folga, todo dia","sem pressa, sem culpa","só mais 5 minutinhos"],
   ["Família e grupos","Família Silva","Turma 2026","Tio Zé","Equipe da firma","Aniversário do Pedro"],
   ["Presentes","Papai","Mamãe","Vovó","melhor amigo","feito com carinho"]
 ];
@@ -750,7 +752,7 @@ $("szr").addEventListener("input",e=>setLarg(+e.target.value,false));
 $("szr").addEventListener("change",e=>setLarg(+e.target.value,true));
 $("szn").addEventListener("input",e=>{const v=parseFloat(String(e.target.value).replace(",","."));if(isFinite(v)){const L=limites(S);S.larg=Math.max(L.min,Math.min(L.max,v));$("szr").value=S.larg;draw();renderLarg()}});
 $("szn").addEventListener("change",e=>{const v=parseFloat(String(e.target.value).replace(",","."));setLarg(isFinite(v)?v:S.larg,true)});
-$("g-ideias").addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(!b)return;S.texto=b.dataset.v;$("txt").value=S.texto;sync()});
+$("g-ideias").addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(!b)return;S.texto=b.dataset.v.slice(0,22);$("txt").value=S.texto;sync()});
 $("txt").addEventListener("input",e=>{S.texto=e.target.value;sync()});
 $("caixa").addEventListener("change",e=>{S.caixa=e.target.checked;sync()});
 $("semFundo").addEventListener("change",e=>{S.semFundo=e.target.checked;buildImg();sync()});
@@ -1129,11 +1131,11 @@ function renderFigPanel(){
   const eg=$("g-esp");eg.innerHTML="";[["Fino",1.6],["Normal",2.2],["Grosso",3]].forEach(([n,v])=>eg.append(mkBtn("chip",n,String(v),S.esp===v)));
   const ag=$("g-acc");ag.innerHTML="";ACCS.forEach(([n,h])=>{const b=mkBtn("swatch","",h,S.acc===h);b.style.background=h;b.title=n;b.setAttribute("aria-label",n);ag.append(b)});
   const cw=$("g-campos"),key=isP&&f0.campos.length&&show?S.edit+f0.id:"";
-  if(cw.dataset.k!==key){cw.dataset.k=key;cw.innerHTML="";if(key){const v=campoVals(S,f0);f0.campos.forEach(([k,lab,d,mx])=>{const w=document.createElement("div");w.innerHTML=`<label class="lab">${lab}</label><input type="text" data-k="${k}" maxlength="${mx}" autocomplete="off">`;w.querySelector("input").value=v[k];cw.append(w)});cw.insertAdjacentHTML("beforeend",'<p class="hint" style="margin:0">Pode trocar os textos. Se apagar o texto da caixa, ela some.</p>')}}
+  if(cw.dataset.k!==key){cw.dataset.k=key;cw.innerHTML="";if(key){const v=campoVals(S,f0);f0.campos.forEach(([k,lab,d,mx])=>{const w=document.createElement("div");w.innerHTML=`<label class="lab">${lab}</label><input type="text" data-k="${k}" maxlength="${mx}" autocomplete="off"><b class="cnt fld" data-mx="${mx}"></b>`;w.querySelector("input").value=v[k];cw.append(w);contaCampo(w.querySelector("input"))});cw.insertAdjacentHTML("beforeend",'<p class="hint" style="margin:0">Pode trocar os textos. Se apagar o texto da caixa, ela some.</p>')}}
 }
 $("g-pack").addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(!b)return;S.pack=b.dataset.v;sync()});
 group("g-acc","acc");
-$("g-campos").addEventListener("input",e=>{const i=e.target.closest("input[data-k]");if(!i||!S.fig)return;S.campos[S.fig.id+"."+i.dataset.k]=i.value;draw();$("res").hidden=true});
+$("g-campos").addEventListener("input",e=>{const i=e.target.closest("input[data-k]");if(!i||!S.fig)return;contaCampo(i);S.campos[S.fig.id+"."+i.dataset.k]=i.value;draw();$("res").hidden=true});
 $("busca").addEventListener("input",e=>{S.q=e.target.value;S.tema="Todos";S.nfig=36;sync()});
 $("g-tema").addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(!b)return;S.tema=b.dataset.v;S.q="";$("busca").value="";S.nfig=36;sync()});
 $("g-figs").addEventListener("click",e=>{const b=e.target.closest(".fig");if(!b)return;S.fig=ALL.find(f=>f.id===b.dataset.id);if(S.fig.pack)S.larg=S.edit==="frente"?(S.fig.byH?28:(S.fig.dl||20)):(S.fig.byH?30:25);sync()});
@@ -1269,7 +1271,9 @@ function draw(){
 
 /* ===== Sincronia da interface ===== */
 function press(id,key){[...$(id).querySelectorAll("[data-v]")].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===String(key))))}
-function sync(){
+function contaTxt(){const n=($("txt").value||"").length,L=22,c=$("txtCnt");if(!c)return;c.textContent=n>=L?`${n} de ${L} · limite atingido`:`${n} de ${L} · faltam ${L-n}`;c.classList.toggle("cheio",n>=L)}
+function contaCampo(i){const c=i.parentNode.querySelector(".cnt"),L=+c.dataset.mx,n=i.value.length;c.textContent=n>=L?`${n} de ${L} · limite atingido`:`${n} de ${L} · faltam ${L-n}`;c.classList.toggle("cheio",n>=L)}
+function sync(){contaTxt();
   {const L=limites(S);S.larg=Math.round(Math.max(L.min,Math.min(L.max,S.larg))*2)/2;uiTam(L)}
   press("g-modelo",S.modelo);press("g-cor",S.cor);press("g-aba",S.aba);press("g-lado",S.edit);renderPos();
   $("posWrap").hidden=false;
