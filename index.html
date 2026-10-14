@@ -1713,7 +1713,7 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   const dig=s=>String(s||"").replace(/\D/g,"");
   const maskTel=v=>{const d=dig(v).slice(0,11);return d.length>6?"("+d.slice(0,2)+") "+d.slice(2,d.length>10?7:6)+"-"+d.slice(d.length>10?7:6):d.length>2?"("+d.slice(0,2)+") "+d.slice(2):d};
   const maskCep=v=>{const d=dig(v).slice(0,8);return d.length>5?d.slice(0,5)+"-"+d.slice(5):d};
-  function ckSaved(){try{return JSON.parse(localStorage.getItem("folgado-cliente")||"{}")}catch(e){return{}}}
+  function ckSaved(){try{localStorage.removeItem("folgado-cliente")}catch(e){}return{}}
   function ckForm(x){
     const S0=ckSaved(),v=k=>esc(S0[k]||"");
     return '<div class="lj-ck" data-ck="'+x+'"><h4>Seus dados</h4>'+
@@ -1731,7 +1731,7 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   }
   function ckBind(root,x){
     const g=k=>$i(x+k);
-    const save=()=>{const o={};["nome","tel","cep","rua","num","comp","bairro","cidade","uf"].forEach(k=>o[k]=g(k).value);const r=root.querySelector('input[name="'+x+'pag"]:checked');o.pag=r?r.value:"";try{localStorage.setItem("folgado-cliente",JSON.stringify(o))}catch(e){}};
+    const save=()=>{};
     root.addEventListener("input",e=>{
       if(e.target.id===x+"tel")e.target.value=maskTel(e.target.value);
       if(e.target.id===x+"cep"){e.target.value=maskCep(e.target.value);if(dig(e.target.value).length===8)buscaCep(x)}
