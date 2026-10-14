@@ -584,6 +584,7 @@ const FOLGADO = {
   instagram: "",               // ex.: "folgadocamisaria" (sem @). Vazio = não mostra o link
   prazo: "",                   // ex.: "Entrega em até 2 dias úteis". Vazio = "combinado no WhatsApp"
   preco: 59.9,                 // preço padrão (EXEMPLO, troque pelo real). null = "valor no zap". Cada estampa pode ter o seu "preco" no CATALOGO.
+  pedidosUrl: "https://pedidos.bernassx.cloud",   // endereço do serviço que guarda a prévia e a arte de cada pedido (ex.: https://pedidos.bernassx.cloud). Vazio = envio em 2 passos pelo WhatsApp
   precoDe: 79.9,               // preço "de" (riscado) mostrado ao lado do preço de hoje. null = não mostra. Use um valor real de referência.
   rotuloPromo: "lançamento",   // texto do selo ao lado do preço riscado
   cupom: { codigo: "PRIMEIRA10", pct: 10 },  // cupom de primeira compra (aparece em pop-up toda vez que o site abre)
@@ -1325,7 +1326,7 @@ $("finalizar").addEventListener("click",async()=>{
   if(lados.some(l=>dataOf(l).aba!=="figura")&&!$("aceite").checked){showErr("Marque a confirmação sobre o uso da arte para continuar.");return}
   $("erro").hidden=true;
   const pair=$("pair"),downs=$("downs");pair.innerHTML="";[...downs.querySelectorAll("a")].forEach(a=>a.remove());
-  const files=[],rows=[["Modelo",S.modelo==="oversized"?"Oversized":"Normal"],["Cor",S.cor==="preta"?"Preta":"Branca"],["Tamanho",S.tam]];
+  const files=[],ups=[],rows=[["Modelo",S.modelo==="oversized"?"Oversized":"Normal"],["Cor",S.cor==="preta"?"Preta":"Branca"],["Tamanho",S.tam]];
   const addFig=(url,cap,chk)=>{const f=document.createElement("figure");const im=document.createElement("img");im.src=url;im.alt=cap;if(chk)im.className="chk";const fc=document.createElement("figcaption");fc.textContent=cap;f.append(im,fc);pair.append(f)};
   const addDown=(url,nome,rot)=>{const a=document.createElement("a");a.className="btn2";a.href=url;a.download=nome;a.textContent=rot;downs.append(a)};
   for(const l of lados){
@@ -1335,17 +1336,28 @@ $("finalizar").addEventListener("click",async()=>{
     const pc=isModel?null:printCanvas(blk);
     const prevUrl=prev.toDataURL("image/jpeg",.9),printUrl=pc?pc.toDataURL("image/png"):"";
     const nm=`folgado-estampa-${l}-${fmt(blk.w).replace(",","_")}cm`;
-    addFig(prevUrl,`Prévia · ${l}`,false);addDown(prevUrl,`folgado-previa-${l}.jpg`,`Baixar prévia (${l})`);
+    ups.push({nome:`previa-${l}.jpg`,dataUrl:prevUrl});if(printUrl)ups.push({nome:`estampa-${l}-${fmt(blk.w).replace(",","_")}cm.png`,dataUrl:printUrl});addFig(prevUrl,`Prévia · ${l}`,false);addDown(prevUrl,`folgado-previa-${l}.jpg`,`Baixar prévia (${l})`);
     if(pc){addFig(printUrl,`Estampa da ${l}, tamanho real`,true);addDown(printUrl,`${nm}.png`,`Baixar estampa (${l})`)}
     try{const b1=await toBlob(prev,"image/jpeg",.9);files.push(new File([b1],`folgado-previa-${l}.jpg`,{type:"image/jpeg"}));if(pc){const b2=await toBlob(pc,"image/png");files.push(new File([b2],`${nm}.png`,{type:"image/png"}))}}catch(e){}
     rows.push([`Estampa ${l==="frente"?"na frente":"nas costas"}`,`${descreve(st,blk)} · ${fmt(blk.w)} × ${fmt(blk.h)} cm · ${posTexto(st,l)}`]);
   }
-  {const c=calcPreco();rows.push(["Valor estimado",brl(c.preco)+" (a confirmar no WhatsApp)"])}rows.push(["Selo Folgado","logo da Folgado (rede) na barra das costas, já incluso"]);const oid=CK?CK.id():"";if(CK)CK.rows(ckr.d,oid).forEach(r=>rows.push(r));else rows.push(["Nome",$("nome").value.trim()]);const obs=$("obs").value.trim();if(obs)rows.push(["Observação",obs]);
+  {const c=calcPreco();rows.push(["Valor estimado",brl(c.preco)+" (a confirmar no WhatsApp)"])}rows.push(["Selo Folgado","logo da Folgado (rede) na barra das costas, já incluso"]);const designRows=rows.slice();const oid=CK?CK.id():"";if(CK)CK.rows(ckr.d,oid).forEach(r=>rows.push(r));else rows.push(["Nome",$("nome").value.trim()]);const obs=$("obs").value.trim();if(obs)rows.push(["Observação",obs]);
   const sum=$("sum");sum.innerHTML="";rows.forEach(([k,v])=>{const dt=document.createElement("dt");dt.textContent=k;const dd=document.createElement("dd");dd.textContent=v;sum.append(dt,dd)});
-  const msg=`*Pedido Folgado* (camiseta personalizada)\n\n`+rows.map(([k,v])=>`*${k}:* ${v}`).join("\n")+`\n\nVou mandar as prévias e os arquivos das estampas em seguida.`;
+  let linkPed="";
+  {const PU=(typeof FOLGADO!=="undefined"&&FOLGADO.pedidosUrl||"").replace(/\/$/,""),fb=$("finalizar"),t0=fb.textContent;
+   if(CK&&PU&&oid){fb.disabled=true;fb.textContent="Enviando sua prévia…";
+     try{const ac=new AbortController(),to=setTimeout(()=>ac.abort(),45000);
+       const r=await fetch(PU+"/api/pedido",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:oid,files:ups,rows:designRows}),signal:ac.signal});clearTimeout(to);
+       const j=await r.json();if(r.ok&&j.url)linkPed=j.url}catch(e){}
+     fb.disabled=false;fb.textContent=t0}}
+  window._linkPed=linkPed;
+  const msg=`*Pedido Folgado* (camiseta personalizada)\n\n`+rows.map(([k,v])=>`*${k}:* ${v}`).join("\n")+(linkPed?`\n\n*Prévia e arte do pedido:* ${linkPed}`:`\n\nVou mandar as prévias e os arquivos das estampas em seguida.`);
   $("btnWa").href=(WHATSAPP?`https://wa.me/${WHATSAPP}`:`https://wa.me/`)+`?text=${encodeURIComponent(msg)}`;
   window._files=files;window._msg=msg;
-  {const can=!!(files.length&&navigator.canShare&&navigator.canShare({files})),wa=$("btnWa");
+  if(linkPed){const wa=$("btnWa");$("btnShare").hidden=true;$("btnVcf").hidden=true;$("resWarn").hidden=true;$("downs").style.display="none";
+   $("resHow").innerHTML="<b>Pronto!</b> Toque no botão abaixo e envie a mensagem no WhatsApp. A sua prévia e a arte já vão junto, por link.";wa.className="cta";wa.textContent="Enviar pedido pelo WhatsApp"}
+  else{$("downs").style.display="";
+  const can=!!(files.length&&navigator.canShare&&navigator.canShare({files})),wa=$("btnWa");
    $("btnShare").hidden=!can;
    $("resHow").innerHTML=can?"<b>São dois toques.</b> <b>1.</b> Abra a conversa com a Folgado e envie o pedido. <b>2.</b> Volte aqui e toque em “Enviar as imagens”: escolha a Folgado, que já aparece no topo da lista do WhatsApp, e envie.":"<b>1.</b> Baixe as imagens abaixo (no celular, toque e segure sobre cada uma). <b>2.</b> Abra o WhatsApp com o pedido. <b>3.</b> Anexe todas as imagens na conversa. A gente responde com a prévia para você aprovar.";
    wa.textContent=can?"1. Abrir conversa e enviar o pedido":"Abrir WhatsApp com o pedido";
