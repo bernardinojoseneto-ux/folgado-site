@@ -607,6 +607,11 @@ const FOLGADO = {
     margemFilmeCm: 0.5,     // sobra de filme em volta de cada estampa
     margemPct: 65,          // ganho em cima do custo, em %
     precoMinimo: 55         // preço fixo mínimo: se custo x (1 + margem) ficar abaixo, vale 55; se passar, vale o calculado
+  },
+  /* Frete fixo para as cidades abaixo (só no Ceará). Qualquer outra cidade fica "a confirmar" e o frete é calculado no WhatsApp. */
+  frete: {
+    valor: 10,
+    cidades: ["Fortaleza","Maranguape","Maracanaú","Eusébio","Aquiraz","Caucaia","Pacatuba","Itaitinga"]
   }
 };
 /* Avaliações REAIS de clientes. Só preencha depois de receber o retorno de verdade.
@@ -1725,7 +1730,7 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   }
   function ckBind(root,x){
     const g=k=>$i(x+k);
-    const save=()=>{};
+    const save=()=>{if(x!=="k-")return;const fr=freteDe({cidade:(g("cidade")||{}).value,uf:(g("uf")||{}).value}),a=$i("k-fr"),t=$i("k-tt");if(a)a.textContent=fr!=null?brl(fr):"a confirmar";if(t){const T=total();t.textContent=T.ok?brl(T.t+(fr||0)):"combinado no WhatsApp"}};
     root.addEventListener("input",e=>{
       if(e.target.id===x+"tel")e.target.value=maskTel(e.target.value);
       if(e.target.id===x+"cep"){e.target.value=maskCep(e.target.value);if(dig(e.target.value).length===8)buscaCep(x)}
@@ -1760,8 +1765,10 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
     return{ok:true,d};
   }
   const ckAddr=d=>d.rua+", "+d.num+(d.comp?" ("+d.comp+")":"")+" - "+d.bairro+", "+d.cidade+"/"+d.uf+" - CEP "+maskCep(d.cep);
+  const FR=Object.assign({valor:10,cidades:[]},F.frete||{}),nrm=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim();
+  const freteDe=d=>(d&&String(d.uf||"").toUpperCase()==="CE"&&FR.cidades.map(nrm).indexOf(nrm(d.cidade))>=0)?FR.valor:null;
   const ckPag=d=>PAGS[d.pag][0]+" ("+PAGS[d.pag][1]+")";
-  function ckRows(d,id){return[["Pedido nº",id],["Nome",d.nome],["WhatsApp do cliente",maskTel(d.tel)],["Entrega",ckAddr(d)+" · frete a confirmar"],["Pagamento",ckPag(d)]]}
+  function ckRows(d,id){return[["Pedido nº",id],["Nome",d.nome],["WhatsApp do cliente",maskTel(d.tel)],["Entrega",ckAddr(d)+" · "+(freteDe(d)!=null?"frete "+brl(freteDe(d)):"frete a confirmar")],["Pagamento",ckPag(d)]]}
   function ckId(){const A="23456789ABCDEFGHJKMNPQRSTUVWXYZ",n=new Date(),m=String(n.getMonth()+1).padStart(2,"0")+String(n.getDate()).padStart(2,"0");let s="";for(let i=0;i<4;i++)s+=A[Math.floor(Math.random()*A.length)];return"FLG-"+m+"-"+s}
   window.FolgadoChk={read:ckRead,rows:ckRows,id:ckId};
   /* checkout do carrinho */
@@ -1770,9 +1777,9 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
     const bx=$i("lj-ckbox"),T=total();
     bx.innerHTML='<div class="lj-ch"><button type="button" class="lj-back" data-kback="1">‹ Voltar ao carrinho</button><button type="button" class="lj-x" aria-label="Fechar">×</button></div>'+
       '<div class="lj-ckp"><h3 style="font-size:24px">Finalizar pedido</h3><div class="lj-sm">'+CART.map(i=>{const p=byId(i.id),pr=preco(p);return '<div><span>'+i.q+'x '+esc(p.nome)+' · '+MODS[i.mod]+' · '+CORS[i.cor]+' · '+i.tam+'</span><span>'+(pr==null?"a combinar":brl(pr*i.q))+'</span></div>'}).join("")+
-      (T.ok&&CUPOM?'<div><span>Cupom '+CP.codigo+'</span><span>−'+brl(T.d)+'</span></div>':'')+'<div><span>Frete</span><span>a confirmar</span></div></div>'+
+      (T.ok&&CUPOM?'<div><span>Cupom '+CP.codigo+'</span><span>−'+brl(T.d)+'</span></div>':'')+'<div><span>Frete</span><span id="k-fr">a confirmar</span></div></div>'+
       ckForm("k-")+'<label class="lj-ck f" style="display:grid;gap:5px;font:600 13px/1.2 var(--body)">Observação (opcional)<textarea id="k-obs" rows="2" maxlength="300" placeholder="ex.: é presente"></textarea></label></div>'+
-      '<div class="lj-ckf"><div class="lj-tot" style="margin:0"><span>Total</span><span>'+(T.ok?brl(T.t):'combinado no WhatsApp')+'</span></div><p class="erro" id="k-erro" role="alert" hidden></p><button type="button" class="lj-btn lj-org" id="k-send">Enviar pedido pelo WhatsApp</button><p class="lj-muted" style="margin:0;font-size:12.5px;text-align:center">Você não paga agora. No WhatsApp a gente confirma o frete e envia o Pix ou o link do cartão.</p></div>';
+      '<div class="lj-ckf"><div class="lj-tot" style="margin:0"><span>Total</span><span id="k-tt">'+(T.ok?brl(T.t):'combinado no WhatsApp')+'</span></div><p class="erro" id="k-erro" role="alert" hidden></p><button type="button" class="lj-btn lj-org" id="k-send">Enviar pedido pelo WhatsApp</button><p class="lj-muted" style="margin:0;font-size:12.5px;text-align:center">Você não paga agora. Frete de '+brl(FR.valor)+' em Fortaleza e região; nas outras cidades a gente calcula no WhatsApp. Depois enviamos o Pix ou o link do cartão.</p></div>';
     ckBind(bx,"k-");abre($i("lj-ovk"));
   }
   $i("lj-ckbox").addEventListener("click",e=>{
@@ -1783,10 +1790,10 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
     if(!e.target.closest("#k-send"))return;
     const er=$i("k-erro"),r=ckRead("k-");
     if(!r.ok){er.textContent=r.err;er.hidden=false;const el=r.node||$i("k-"+r.el);el&&el.scrollIntoView({block:"center",behavior:"smooth"});el&&el.focus&&el.focus({preventScroll:true});return}
-    er.hidden=true;const d=r.d,T=total(),obs=($i("k-obs").value||"").trim(),id=ckId();
+    er.hidden=true;const d=r.d,fr=freteDe(d),T=total(),obs=($i("k-obs").value||"").trim(),id=ckId();
     let m="*Pedido Folgado* nº "+id+"\n\n*Itens*\n"+CART.map((i,n)=>{const p=byId(i.id);return (n+1)+") "+p.nome+" ("+TIPO[p.tipo]+")\n    "+MODS[i.mod]+" · "+CORS[i.cor]+" · tam. "+i.tam+" · "+i.q+"x"}).join("\n")+
-      "\n\n*Cliente*\n"+d.nome+"\nWhatsApp: "+maskTel(d.tel)+"\n\n*Entrega*\n"+ckAddr(d)+"\nFrete: a confirmar\n\n*Pagamento*\n"+ckPag(d)+
-      (obs?"\n\n*Observação*\n"+obs:"")+(CUPOM?"\n\n*Cupom* "+CP.codigo+" ("+CP.pct+"% na primeira compra, pode conferir)":"")+(T.ok?(CUPOM?"\nSubtotal: "+brl(T.sub)+"\nDesconto: -"+brl(T.d):"")+"\n*Total dos itens:* "+brl(T.t)+" (sem frete)":"\n*Total:* valor a combinar");
+      "\n\n*Cliente*\n"+d.nome+"\nWhatsApp: "+maskTel(d.tel)+"\n\n*Entrega*\n"+ckAddr(d)+"\nFrete: "+(fr!=null?brl(fr):"a confirmar")+"\n\n*Pagamento*\n"+ckPag(d)+
+      (obs?"\n\n*Observação*\n"+obs:"")+(CUPOM?"\n\n*Cupom* "+CP.codigo+" ("+CP.pct+"% na primeira compra, pode conferir)":"")+(T.ok?(CUPOM?"\nSubtotal: "+brl(T.sub)+"\nDesconto: -"+brl(T.d):"")+(fr!=null?"\n*Total dos itens:* "+brl(T.t)+"\n*Frete:* "+brl(fr)+"\n*Total com frete:* "+brl(T.t+fr):"\n*Total dos itens:* "+brl(T.t)+" (sem frete)"):"\n*Total:* valor a combinar");
     window.__ckmsg=m;const url="https://wa.me/"+(F.whatsapp||"")+"?text="+encodeURIComponent(m);
     $i("lj-ckbox").innerHTML='<div class="lj-ch"><span></span><button type="button" class="lj-x" aria-label="Fechar">×</button></div><div class="lj-ok"><div class="tick">✓</div><h3 style="font-size:26px">Pedido pronto para enviar</h3><div class="nr">'+id+'</div><p style="margin:0;max-width:380px">Falta só um passo: <b>envie a mensagem no WhatsApp</b>. Lá a gente confirma o frete e '+(d.pag==="pix"?'manda o código Pix para você pagar.':d.pag==="cartao"?'manda o link seguro para você pagar no cartão.':'combina a forma de pagamento.')+'</p><a class="lj-btn lj-org" href="'+url+'" target="_blank" rel="noopener">Abrir o WhatsApp</a><button type="button" class="lj-btn" data-kcopy="1">Copiar o pedido</button><button type="button" class="lj-btn" data-kclear="1">Esvaziar o carrinho e fechar</button></div>';
     window.open(url,"_blank","noopener");
