@@ -591,21 +591,22 @@ const FOLGADO = {
   whatsapp: "5585987083063",   // DDI+DDD+número, só dígitos
   instagram: "",               // ex.: "folgadocamisaria" (sem @). Vazio = não mostra o link
   prazo: "",                   // ex.: "Entrega em até 2 dias úteis". Vazio = "combinado no WhatsApp"
-  preco: 59.9,                 // preço padrão (EXEMPLO, troque pelo real). null = "valor no zap". Cada estampa pode ter o seu "preco" no CATALOGO.
+  preco: 55,                   // preço fixo das estampas prontas (piso de 55; todas custam menos que isso x 1,65). null = "valor no zap". Cada estampa pode ter o seu "preco" no CATALOGO.
   pedidosUrl: "https://pedidos.bernassx.cloud",   // endereço do serviço que guarda a prévia e a arte de cada pedido (ex.: https://pedidos.bernassx.cloud). Vazio = envio em 2 passos pelo WhatsApp
   precoDe: 79.9,               // preço "de" (riscado) mostrado ao lado do preço de hoje. null = não mostra. Use um valor real de referência.
   rotuloPromo: "lançamento",   // texto do selo ao lado do preço riscado
   cupom: { codigo: "PRIMEIRA10", pct: 10 },  // cupom de primeira compra (aparece em pop-up toda vez que o site abre)
   /* Preço da aba "Monte a sua": muda com o tamanho da estampa. PROVISÓRIO: troque pelos seus custos reais.
-     preço = (camiseta lisa + outros custos + filme DTF) x (1 + margem%), arredondado para ,90 */
+     preço = maior entre precoMinimo e (camiseta do modelo + embalagem + filme DTF) x (1 + margem%), arredondado para ,90 */
   precificacao: {
-    custoCamiseta: 22,      // R$ da camiseta lisa (provisório)
-    outrosCustos: 6,        // R$ de embalagem, mão de obra, taxas por peça (provisório)
-    custoMetroFilme: 55,    // R$ por metro de filme DTF (informado: 55)
-    larguraFilmeCm: 58,     // largura útil do filme. Com 58 cm, 19 estampas por metro dão ~17,5 x 17,5 cm cada
+    custoCamisetaOversized: 18.37, // R$ por peça oversized (16,90 + frete rateado 1,47), orçamento Navor de 15/10/2026
+    custoCamisetaNormal: 14.37,    // R$ por peça tradicional (12,90 + frete rateado 1,47)
+    outrosCustos: 2.5,      // R$ de embalagem por peça (estimativa: trocar pelo real)
+    custoMetroFilme: 55,    // R$ por folha de 100 cm de filme DTF (informado: 55)
+    larguraFilmeCm: 60,     // largura paga do filme (60 cm; 58 cm úteis)
     margemFilmeCm: 0.5,     // sobra de filme em volta de cada estampa
-    margemPct: 100,         // ganho em cima do custo, em % (100 = o dobro do custo)
-    precoMinimo: 0          // piso opcional, em R$
+    margemPct: 65,          // ganho em cima do custo, em %
+    precoMinimo: 55         // preço fixo mínimo: se custo x (1 + margem) ficar abaixo, vale 55; se passar, vale o calculado
   }
 };
 /* Avaliações REAIS de clientes. Só preencha depois de receber o retorno de verdade.
@@ -1180,7 +1181,7 @@ function printBlock(st){
 }
 
 /* ===== Tamanho livre e preço estimado ===== */
-const PRC=Object.assign({custoCamiseta:22,outrosCustos:6,custoMetroFilme:55,larguraFilmeCm:58,margemFilmeCm:.5,margemPct:100,precoMinimo:0},(typeof FOLGADO!=="undefined"&&FOLGADO.precificacao)||{});
+const PRC=Object.assign({custoCamisetaOversized:18.37,custoCamisetaNormal:14.37,outrosCustos:2.5,custoMetroFilme:55,larguraFilmeCm:60,margemFilmeCm:.5,margemPct:65,precoMinimo:55},(typeof FOLGADO!=="undefined"&&FOLGADO.precificacao)||{});
 const SELO_CM=[6.5,2.3];
 function limites(st){
   const modo=(st.aba==="figura"&&st.fig&&st.fig.pack&&st.fig.byH)?"altura":"largura";
@@ -1201,9 +1202,10 @@ function areaFilme(b){const m=PRC.margemFilmeCm*2;return(b.w+m)*(b.h+m)}
 function calcPreco(){
   let area=(SELO_CM[0]+PRC.margemFilmeCm*2)*(SELO_CM[1]+PRC.margemFilmeCm*2),n=0;
   for(const l of["frente","costas"]){if(!S.ativo[l])continue;const st=dataOf(l);let b=null;try{b=printBlock(st)}catch(e){}if(b){area+=areaFilme(b);n++}}
-  const custo=PRC.custoCamiseta+PRC.outrosCustos+custoFilme(area);
-  let v=custo*(1+PRC.margemPct/100);v=Math.max(v,PRC.precoMinimo||0);
-  return{preco:Math.ceil(v-.9)+.9,custo,area,lados:n};
+  const custo=(S.modelo==="oversized"?PRC.custoCamisetaOversized:PRC.custoCamisetaNormal)+PRC.outrosCustos+custoFilme(area);
+  const calc=custo*(1+PRC.margemPct/100),piso=PRC.precoMinimo||0;
+  const preco=calc<=piso?piso:Math.ceil(calc-.9)+.9;
+  return{preco,custo,area,lados:n};
 }
 const brl=v=>"R$ "+v.toFixed(2).replace(".",",");
 function avisoTam(blk){
