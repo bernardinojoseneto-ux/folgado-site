@@ -1461,7 +1461,7 @@ $("finalizar").addEventListener("click",async()=>{
     try{const b1=await toBlob(prev,"image/jpeg",.9);files.push(new File([b1],`folgado-previa-${l}.jpg`,{type:"image/jpeg"}));if(pc&&printBlob)files.push(new File([printBlob],`${nm}.png`,{type:"image/png"}))}catch(e){}
     rows.push([`Estampa ${SLOT_NOME[l]}`,`${descreve(st,blk)} · ${fmt(blk.w)} × ${fmt(blk.h)} cm · ${posTexto(st,l)}`]);
   }
-  {const c=calcPreco();rows.push(["Valor estimado",brl(c.preco)+" (a confirmar no WhatsApp)"])}rows.push(["Selo Folgado","logo da Folgado (rede) na barra das costas, já incluso"]);const designRows=rows.slice();const oid=CK?CK.id():"";if(CK)CK.rows(ckr.d,oid).forEach(r=>rows.push(r));else rows.push(["Nome",$("nome").value.trim()]);const obs=$("obs").value.trim();if(obs)rows.push(["Observação",obs]);
+  {const c=calcPreco(),fr=CK&&ckr?CK.frete(ckr.d):null;rows.push(["Valor estimado",fr!=null?"Camiseta "+brl(c.preco)+" + frete "+brl(fr)+" = "+brl(c.preco+fr)+" (a confirmar no WhatsApp)":"Camiseta "+brl(c.preco)+" + frete a confirmar (a confirmar no WhatsApp)"])}rows.push(["Selo Folgado","logo da Folgado (rede) na barra das costas, já incluso"]);const designRows=rows.slice();const oid=CK?CK.id():"";if(CK)CK.rows(ckr.d,oid).forEach(r=>rows.push(r));else rows.push(["Nome",$("nome").value.trim()]);const obs=$("obs").value.trim();if(obs)rows.push(["Observação",obs]);
   const sum=$("sum");sum.innerHTML="";rows.forEach(([k,v])=>{const dt=document.createElement("dt");dt.textContent=k;const dd=document.createElement("dd");dd.textContent=v;sum.append(dt,dd)});
   let linkPed="";
   {const PU=(typeof FOLGADO!=="undefined"&&FOLGADO.pedidosUrl||"").replace(/\/$/,""),fb=$("finalizar"),t0=fb.textContent;
@@ -1875,7 +1875,7 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   const ckPag=d=>PAGS[d.pag][0]+" ("+PAGS[d.pag][1]+")";
   function ckRows(d,id){return[["Pedido nº",id],["Nome",d.nome],["WhatsApp do cliente",maskTel(d.tel)],["Entrega",ckAddr(d)+" · "+(freteDe(d)!=null?"frete "+brl(freteDe(d)):"frete a confirmar")],["Pagamento",ckPag(d)]]}
   function ckId(){const A="23456789ABCDEFGHJKMNPQRSTUVWXYZ",n=new Date(),m=String(n.getMonth()+1).padStart(2,"0")+String(n.getDate()).padStart(2,"0");let s="";for(let i=0;i<4;i++)s+=A[Math.floor(Math.random()*A.length)];return"FLG-"+m+"-"+s}
-  window.FolgadoChk={read:ckRead,rows:ckRows,id:ckId};
+  window.FolgadoChk={read:ckRead,rows:ckRows,id:ckId,frete:freteDe};
   /* checkout do carrinho */
   function abreCk(){
     if(!CART.length)return;
