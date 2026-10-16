@@ -442,7 +442,7 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
 <section id="lj-colecao" style="padding-top:34px"><div class="lj-wrap">
   <div class="lj-head"><div><p class="lj-eyebrow">camisetas prontas</p><h2 style="margin-top:8px">escolha a sua.</h2></div></div>
   <div class="lj-bar" id="lj-bar" role="group" aria-label="Filtros">
-    <div class="lj-fg"><span class="lj-fl">Onde fica a estampa</span><div class="lj-chips"><button class="lj-chip" data-k="tipo" data-v="todas" aria-pressed="true">Todas</button><button class="lj-chip" data-k="tipo" data-v="frente" aria-pressed="false">Na frente</button><button class="lj-chip" data-k="tipo" data-v="costas" aria-pressed="false">Nas costas</button><button class="lj-chip" data-k="tipo" data-v="combo" aria-pressed="false">Frente e costas</button></div></div>
+    <div class="lj-fg"><span class="lj-fl">Tema</span><div class="lj-chips"><button class="lj-chip" data-k="tema" data-v="todas" aria-pressed="true">Todas</button><button class="lj-chip" data-k="tema" data-v="novidades" aria-pressed="false">Novidades</button><button class="lj-chip" data-k="tema" data-v="nordeste" aria-pressed="false">Nordeste</button><button class="lj-chip" data-k="tema" data-v="fe" aria-pressed="false">Fé</button><button class="lj-chip" data-k="tema" data-v="bichos" aria-pressed="false">Bichos</button></div></div>
     <div class="lj-fg"><span class="lj-fl">Modelo</span><div class="lj-seg"><button class="lj-chip" data-k="mod" data-v="oversized" aria-pressed="true">Oversized</button><button class="lj-chip" data-k="mod" data-v="normal" aria-pressed="false">Normal</button></div></div>
     <span class="lj-count" id="lj-count"></span>
   </div>
@@ -1650,7 +1650,9 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const img=(p,mod,cor,i=0)=>((p.imagens[mod+"_"+cor]||[])[i])||"";
   /* estado */
-  let FIL={tipo:"todas",mod:"oversized"},CART=[];
+  let FIL={tema:"todas",mod:"oversized"},CART=[];
+  const TEMAS={novidades:["16-capivara-skate","17-capivara-banho","18-caveira-bombada","19-galo-folgado","20-urso-de-role"],nordeste:["10-cuscuz","11-tapioca","03-jangada","13-fortaleza-ceara"],fe:["14-fe-no-dia-a-dia","15-cruz-dourada","cruz"],bichos:["16-capivara-skate","17-capivara-banho","19-galo-folgado","20-urso-de-role"]};
+  const CORSEL={};
   try{CART=JSON.parse(localStorage.getItem("folgado-carrinho")||"[]")}catch(e){}
   const save=()=>{try{localStorage.setItem("folgado-carrinho",JSON.stringify(CART))}catch(e){}};
   const byId=id=>CATALOGO.find(p=>p.id===id);
@@ -1673,16 +1675,17 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   $i("lj-bar").addEventListener("click",e=>{const b=e.target.closest(".lj-chip");if(!b)return;FIL[b.dataset.k]=b.dataset.v;renderBar();renderCards()});
   function renderCards(){
     const box=$i("lj-cards");box.innerHTML="";
-    const lista=CATALOGO.filter(p=>FIL.tipo==="todas"||p.tipo===FIL.tipo);
+    const lista=CATALOGO.filter(p=>FIL.tema==="todas"||(TEMAS[FIL.tema]||[]).indexOf(p.id)>-1);
+    let cols=2;try{cols=getComputedStyle(box).gridTemplateColumns.split(" ").length||2}catch(e){}
     $i("lj-count").textContent=lista.length+(lista.length===1?" estampa":" estampas");
     lista.forEach((p,idx)=>{
-      let cor="preta";const pr=preco(p);
+      let cor=CORSEL[p.id]||(((idx%cols)+Math.floor(idx/cols))%2?"branca":"preta");const pr=preco(p);
       const c=el("article","lj-card",'<button type="button" class="lj-ph" aria-label="Ver '+esc(p.nome)+'"><img alt="">'+(precoDe(p)?'<span class="lj-off lj-offi">−'+off(p)+'%</span>':'')+'<span class="lj-tipo">'+TIPO[p.tipo]+'</span><span class="lj-badge" hidden>novidade</span></button>'+
         '<div class="lj-info"><div><button type="button" class="lj-nome">'+esc(p.nome)+'</button><div class="lj-fr">'+esc(p.frase)+'</div></div><div class="lj-pw">'+precoHTML(p)+'</div></div>'+
         '<div class="lj-sw" role="group" aria-label="Cor"><button type="button" data-c="preta" style="background:#1c1815" aria-label="Preta"></button><button type="button" data-c="branca" style="background:#f4f2ee" aria-label="Branca"></button></div><button type="button" class="lj-buy">Escolher tamanho</button>');
       const im=c.querySelector("img");if(p.novo)c.querySelector(".lj-badge").hidden=false;
       const upd=()=>{im.src=img(p,FIL.mod,cor,0);im.alt=p.nome+", camiseta "+MODS[FIL.mod].toLowerCase()+" "+CORS[cor].toLowerCase();c.querySelectorAll(".lj-sw button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.c===cor)))};
-      c.querySelector(".lj-sw").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(b){cor=b.dataset.c;upd()}});
+      c.querySelector(".lj-sw").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(b){cor=b.dataset.c;CORSEL[p.id]=cor;upd()}});
       const open=()=>abreProduto(p,FIL.mod,cor);c.querySelector(".lj-ph").addEventListener("click",open);c.querySelector(".lj-nome").addEventListener("click",open);c.querySelector(".lj-buy").addEventListener("click",open);
       upd();box.append(c);
       if(idx===Math.min(lista.length,5)-1||(lista.length<5&&idx===lista.length-1)){}
