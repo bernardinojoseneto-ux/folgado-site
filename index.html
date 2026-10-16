@@ -1755,14 +1755,13 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
   const TG={normal:{P:96,M:102,G:108,GG:114},oversized:{P:112,M:118,G:124,GG:130}};
   const TF={normal:{justo:4,meu:8,folgado:14},oversized:{justo:12,meu:20,folgado:28}};
   const PREF={justo:"Mais justa",meu:"Do meu jeito",folgado:"Mais folgada"};
-  function tamCalc(mod,alt,peso,peito,pref){
-    const body=peito||(8.5+0.5*peso+0.3*alt),tg=TF[mod][pref];let best=null;const all=Object.keys(TG[mod]).map(k=>{const ease=TG[mod][k]-body,d=ease-tg;return{k,d,lab:Math.abs(d)<=3?"ideal":d>8?"bem folgada":d>3?"levemente folgada":d<-8?"justa demais":"levemente justa"}});
+  function tamCalc(mod,alt,peso,idade,pref){
+    const body=8.5+0.5*peso+0.3*alt+Math.max(-2,Math.min(6,(idade-25)*0.15)),tg=TF[mod][pref];let best=null;const all=Object.keys(TG[mod]).map(k=>{const ease=TG[mod][k]-body,d=ease-tg;return{k,d,lab:Math.abs(d)<=3?"ideal":d>8?"bem folgada":d>3?"levemente folgada":d<-8?"justa demais":"levemente justa"}});
     all.forEach(a=>{if(!best||Math.abs(a.d)<Math.abs(best.d))best=a});return{body,best,all,fora:Math.abs(best.d)>12}}
   function abreTamanho(p,st,apply){
-    const ov=$i("lj-ovt"),bx=$i("lj-tambox");let M={alt:"",peso:"",peito:"",pref:"meu"},mod=st.mod;
-    try{Object.assign(M,JSON.parse(localStorage.getItem("folgado-medidas")||"{}"))}catch(e){}
+    const ov=$i("lj-ovt"),bx=$i("lj-tambox");let M={alt:"",peso:"",idade:"",pref:"meu"},mod=st.mod;
     bx.innerHTML='<button type="button" class="lj-x" aria-label="Fechar">×</button><div class="lj-tam"><div class="im"><img alt="" src="'+img(p,st.mod,st.cor,0)+'"></div><div class="rt"><div><p class="lj-eyebrow">provador</p><h2 style="margin-top:8px">descubra seu tamanho</h2></div>'+
-      '<div class="lj-fld"><label>Altura (cm)<input id="lj-ta" type="number" inputmode="numeric" min="140" max="210" placeholder="175" value="'+esc(M.alt)+'"></label><label>Peso (kg)<input id="lj-tp" type="number" inputmode="numeric" min="35" max="200" placeholder="75" value="'+esc(M.peso)+'"></label><label>Peito (cm)<input id="lj-tc" type="number" inputmode="numeric" min="70" max="150" placeholder="opcional" value="'+esc(M.peito)+'"></label></div>'+
+      '<div class="lj-fld"><label>Altura (cm)<input id="lj-ta" type="number" inputmode="numeric" min="140" max="210" placeholder="175" value="'+esc(M.alt)+'"></label><label>Peso (kg)<input id="lj-tp" type="number" inputmode="numeric" min="35" max="200" placeholder="75" value="'+esc(M.peso)+'"></label><label>Idade (anos)<input id="lj-tc" type="number" inputmode="numeric" min="12" max="90" placeholder="25" value="'+esc(M.idade)+'"></label></div>'+
       '<div><span class="lab">Modelo</span><div class="lj-row" data-gm><button type="button" class="lj-chip" data-m="oversized">Oversized</button><button type="button" class="lj-chip" data-m="normal">Normal</button></div></div>'+
       '<div><span class="lab">Como você gosta de vestir</span><div class="lj-row" data-gp>'+Object.keys(PREF).map(k=>'<button type="button" class="lj-chip" data-p="'+k+'">'+PREF[k]+'</button>').join("")+'</div></div>'+
       '<div id="lj-tr"></div><button type="button" class="lj-btn lj-pri" id="lj-tuse" hidden></button>'+
@@ -1771,17 +1770,17 @@ Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç")
     let cur=null;
     const draw=()=>{
       bx.querySelectorAll("[data-m]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.m===mod)));bx.querySelectorAll("[data-p]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.p===M.pref)));
-      const a=+M.alt,w=+M.peso,c=+M.peito,okc=c>=70&&c<=150,okb=a>=140&&a<=210&&w>=35&&w<=200,R=$i("lj-tr"),U=$i("lj-tuse");
-      if(!okc&&!okb){R.innerHTML='<div class="lj-wait">Preencha altura e peso (ou só a medida do peito) para ver o tamanho ideal.</div>';U.hidden=true;cur=null;return}
-      const r=tamCalc(mod,a,w,okc?c:0,M.pref);cur=r.best.k;
-      R.innerHTML='<div class="lj-res"><div class="lj-big">'+r.best.k+'<i>✓</i></div><div><p class="t">melhor opção</p><p class="d">'+(r.fora?'Está fora da nossa grade, chame no WhatsApp':'Fica '+r.best.lab+' em você')+'</p><p class="s">Peito estimado: '+Math.round(r.body)+' cm'+(okc?' (informado)':'')+'</p></div></div><span class="lab" style="margin:14px 0 8px">Prove também</span><div class="lj-alt">'+r.all.map(x=>'<div class="'+(x.k===r.best.k?'on':'')+'">'+x.k+'<small>'+x.lab+'</small></div>').join("")+'</div>';
+      const a=+M.alt,w=+M.peso,c=+M.idade,okb=a>=140&&a<=210&&w>=35&&w<=200&&c>=12&&c<=90,R=$i("lj-tr"),U=$i("lj-tuse");
+      if(!okb){R.innerHTML='<div class="lj-wait">Preencha altura, peso e idade para ver o tamanho ideal.</div>';U.hidden=true;cur=null;return}
+      const r=tamCalc(mod,a,w,c,M.pref);cur=r.best.k;
+      R.innerHTML='<div class="lj-res"><div class="lj-big">'+r.best.k+'<i>✓</i></div><div><p class="t">melhor opção</p><p class="d">'+(r.fora?'Está fora da nossa grade, chame no WhatsApp':'Fica '+r.best.lab+' em você')+'</p><p class="s">Peito estimado: '+Math.round(r.body)+' cm (calculado pela altura, peso e idade)'+'</p></div></div><span class="lab" style="margin:14px 0 8px">Prove também</span><div class="lj-alt">'+r.all.map(x=>'<div class="'+(x.k===r.best.k?'on':'')+'">'+x.k+'<small>'+x.lab+'</small></div>').join("")+'</div>';
       U.hidden=false;U.textContent="Usar o tamanho "+r.best.k;
     };
-    bx.oninput=e=>{const m={"lj-ta":"alt","lj-tp":"peso","lj-tc":"peito"}[e.target.id];if(!m)return;M[m]=e.target.value;try{localStorage.setItem("folgado-medidas",JSON.stringify(M))}catch(x){}draw()};
+    bx.oninput=e=>{const m={"lj-ta":"alt","lj-tp":"peso","lj-tc":"idade"}[e.target.id];if(!m)return;M[m]=e.target.value;draw()};
     bx.onclick=e=>{
       if(e.target.closest(".lj-x")){ov.hidden=true;return}
       const m=e.target.closest("[data-m]");if(m){mod=m.dataset.m;draw();return}
-      const pf=e.target.closest("[data-p]");if(pf){M.pref=pf.dataset.p;try{localStorage.setItem("folgado-medidas",JSON.stringify(M))}catch(x){}draw();return}
+      const pf=e.target.closest("[data-p]");if(pf){M.pref=pf.dataset.p;draw();return}
       if(e.target.closest("#lj-tuse")&&cur){apply(mod,cur);ov.hidden=true;toast("Tamanho "+cur+" selecionado")}
     };
     ov.hidden=false;bx.scrollTop=0;draw();setTimeout(()=>{const f=$i("lj-ta");f&&!f.value&&f.focus()},40);
