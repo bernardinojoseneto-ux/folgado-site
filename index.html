@@ -524,6 +524,7 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
         <span class="lab">Em qual lado?</span>
         <div class="tabs" id="g-lado" role="group" aria-label="Lado da camiseta a estampar">
           <button type="button" class="tab" data-v="frente" data-on="1">Frente</button>
+          <button type="button" class="tab" data-v="frente2" data-on="0">2ª na frente</button>
           <button type="button" class="tab" data-v="costas" data-on="0">Costas</button>
         </div>
         <label class="check" style="margin-top:10px"><input type="checkbox" id="ativo"><span id="ativoTxt">Estampar na frente</span></label>
@@ -758,9 +759,10 @@ const _MP0b="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAMGCAMAAAA9WxBxA
 /* ===== Estado: a frente e as costas têm cada uma a sua estampa ===== */
 const SIDE_FIELDS=["pack","campos","acc","aba","texto","fonte","caixa","corTxt","fig","esp","q","tema","nfig","ox","oy","larg","img","imgNome","semFundo","natW","raw"];
 function novoLado(l){return {pack:"Figurinhas",campos:{},acc:"#E2742B",aba:"texto",texto:l==="frente"?"hoje não tem pressa.":"",fonte:"fraunces",caixa:false,corTxt:CORES.preta[0][1],fig:null,esp:2.2,q:"",tema:"Todos",nfig:36,
-  ox:0,oy:l==="frente"?14:10,larg:l==="frente"?12:25,img:null,imgNome:"",semFundo:false,natW:0,raw:null}}
-const S={modelo:"oversized",cor:"preta",tam:"M",edit:"frente",ativo:{frente:true,costas:false},bloq:null,...novoLado("frente")};
-const SAVED={costas:novoLado("costas")};              // o lado que não está sendo editado fica guardado aqui
+  ox:0,oy:l==="frente"?14:l==="frente2"?30:10,larg:l==="frente"?12:l==="frente2"?9:25,img:null,imgNome:"",semFundo:false,natW:0,raw:null}}
+const SLOTS=["frente","frente2","costas"],fisico=l=>l==="costas"?"costas":"frente",SLOT_NOME={frente:"na frente",frente2:"na frente (2ª estampa)",costas:"nas costas"},SLOT_ROT={frente:"frente",frente2:"frente (2ª)",costas:"costas"};
+const S={modelo:"oversized",cor:"preta",tam:"M",edit:"frente",ativo:{frente:true,frente2:false,costas:false},bloq:null,...novoLado("frente")};
+const SAVED={frente2:novoLado("frente2"),costas:novoLado("costas")};              // o lado que não está sendo editado fica guardado aqui
 const dataOf=l=>l===S.edit?S:SAVED[l];
 const $=id=>document.getElementById(id);
 const cv=$("cv"),ctx=cv.getContext("2d");
@@ -777,8 +779,9 @@ function trocaLado(novo){
 function mkBtn(cls,html,v,pressed){const b=document.createElement("button");b.type="button";b.className=cls;b.innerHTML=html;b.dataset.v=v;b.setAttribute("aria-pressed",pressed?"true":"false");return b}
 function group(id,key,after){$(id).addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(!b)return;S[key]=b.dataset.v;after&&after();sync()})}
 function renderTam(){const g=$("g-tam");g.innerHTML="";TAMANHOS.forEach(t=>g.append(mkBtn("chip sz",t,t,S.tam===t)))}
-function renderLarg(){const g=$("g-larg");g.innerHTML="";const L=limites(S);TAMS[S.edit].filter(w=>w>=L.min&&w<=L.max+.01).forEach(w=>g.append(mkBtn("chip",`<b>${w} cm</b> · ${LARG_ROT[w]}`,String(w),S.larg===w)))}
-function presets(){const g=GEO[S.modelo];return S.edit==="frente"?
+function renderLarg(){const g=$("g-larg");g.innerHTML="";const L=limites(S);TAMS[fisico(S.edit)].filter(w=>w>=L.min&&w<=L.max+.01).forEach(w=>g.append(mkBtn("chip",`<b>${w} cm</b> · ${LARG_ROT[w]}`,String(w),S.larg===w)))}
+function presets(){const g=GEO[S.modelo];return S.edit==="frente2"?
+ [["Barriga, centro",0,g.front+15],["Barriga esquerda",g.dx,g.front+15],["Barriga direita",-g.dx,g.front+15],["Bainha, centro",0,g.front+24]]:S.edit==="frente"?
  [["Peito esquerdo",g.dx,g.front-1],["Peito centro",0,g.front],["Peito direito",-g.dx,g.front-1],["Centro, grande",0,g.front+4]]:
  [["Alto, centro",0,g.back],["Meio das costas",0,g.back+8],["Nuca, pequena",0,g.back-4]]}
 function renderPos(){const g=$("g-pos");g.innerHTML="";presets().forEach(([n,x,y],i)=>g.append(mkBtn("chip",n,String(i),Math.abs(S.ox-x)<.3&&Math.abs(S.oy-y)<.3)))}
@@ -791,7 +794,7 @@ function clampPos(st,blk,lado=S.edit){
   st.ox=Math.round(st.ox*10)/10;st.oy=Math.round(st.oy*10)/10;
 }
 function posTexto(st,l){
-  const ox=Math.abs(st.ox),lado=l==="frente"?(st.ox>0?"esquerdo":"direito"):(st.ox>0?"direito":"esquerdo");
+  const ox=Math.abs(st.ox),lado=l!=="costas"?(st.ox>0?"esquerdo":"direito"):(st.ox>0?"direito":"esquerdo");
   return `${ox<.5?"centralizada":fmt(ox)+" cm do centro, para o lado "+lado}, a ${fmt(st.oy)} cm da gola`;
 }
 function renderFontes(){const g=$("g-fonte");g.innerHTML="";Object.entries(FONTES).forEach(([k,f])=>g.append(mkBtn("fontbtn",`<span style="font-family:${FAM[k]}">${f.sample}</span><small>${f.rot}</small>`,k,S.fonte===k)))}
@@ -799,7 +802,7 @@ function renderCores(){["g-corTxt","g-corFig"].forEach(id=>{const g=$(id);g.inne
 function renderIdeias(){const g=$("g-ideias");g.innerHTML="";IDEIAS.forEach(([t,...xs])=>{const l=document.createElement("span");l.className="hint";l.style.cssText="width:100%;margin:6px 0 0";l.textContent=t;g.append(l);xs.forEach(x=>g.append(mkBtn("chip",x,x,false)))})}
 function corValida(st){if(!CORES[S.cor].some(c=>c[1]===st.corTxt))st.corTxt=CORES[S.cor][0][1]}
 group("g-modelo","modelo");
-group("g-cor","cor",()=>{corValida(S);corValida(SAVED[S.edit==="frente"?"costas":"frente"])});
+group("g-cor","cor",()=>{corValida(S);Object.keys(SAVED).forEach(k=>corValida(SAVED[k]))});
 group("g-tam","tam");
 group("g-aba","aba");
 group("g-fonte","fonte");
@@ -1221,7 +1224,7 @@ group("g-acc","acc");
 $("g-campos").addEventListener("input",e=>{const i=e.target.closest("input[data-k]");if(!i||!S.fig)return;contaCampo(i);S.campos[S.fig.id+"."+i.dataset.k]=i.value;draw();$("res").hidden=true});
 $("busca").addEventListener("input",e=>{S.q=e.target.value;S.tema="Todos";S.nfig=36;sync()});
 $("g-tema").addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(!b)return;S.tema=b.dataset.v;S.q="";$("busca").value="";S.nfig=36;sync()});
-$("g-figs").addEventListener("click",e=>{const b=e.target.closest(".fig");if(!b)return;S.fig=ALL.find(f=>f.id===b.dataset.id);if(S.fig.pack)S.larg=S.edit==="frente"?(S.fig.byH?28:(S.fig.dl||20)):(S.fig.byH?30:25);sync()});
+$("g-figs").addEventListener("click",e=>{const b=e.target.closest(".fig");if(!b)return;S.fig=ALL.find(f=>f.id===b.dataset.id);if(S.fig.pack)S.larg=S.edit==="frente2"?(S.fig.byH?20:10):S.edit==="frente"?(S.fig.byH?28:(S.fig.dl||20)):(S.fig.byH?30:25);sync()});
 $("maisFigs").addEventListener("click",()=>{S.nfig+=48;sync()});
 $("g-esp").addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(!b)return;S.esp=+b.dataset.v;sync()});
 
@@ -1283,21 +1286,29 @@ function custoFilme(cm2){return cm2*PRC.custoMetroFilme/(PRC.larguraFilmeCm*100)
 function areaFilme(b){const m=PRC.margemFilmeCm*2;return(b.w+m)*(b.h+m)}
 function calcPreco(){
   let area=(SELO_CM[0]+PRC.margemFilmeCm*2)*(SELO_CM[1]+PRC.margemFilmeCm*2),n=0;
-  for(const l of["frente","costas"]){if(!S.ativo[l])continue;const st=dataOf(l);let b=null;try{b=printBlock(st)}catch(e){}if(b){area+=areaFilme(b);n++}}
+  for(const l of SLOTS){if(!S.ativo[l])continue;const st=dataOf(l);let b=null;try{b=printBlock(st)}catch(e){}if(b){area+=areaFilme(b);n++}}
   const custo=(S.modelo==="oversized"?PRC.custoCamisetaOversized:PRC.custoCamisetaNormal)+PRC.outrosCustos+custoFilme(area);
   const calc=custo*(1+PRC.margemPct/100),piso=PRC.precoMinimo||0;
   const teto=PRC.precoMaximo||Infinity,preco=calc<=piso?piso:Math.min(Math.ceil(calc-.9)+.9,teto);
   return{preco,custo,area,lados:n};
 }
 const brl=v=>"R$ "+v.toFixed(2).replace(".",",");
+function colideFrente(){
+  if(!S.ativo.frente||!S.ativo.frente2)return false;
+  const r=l=>{const st=dataOf(l),b=printBlock(st);if(!b)return null;const p=printPos(b,st);return{x0:p.x/PX,y0:p.y/PX,x1:p.x/PX+b.w,y1:p.y/PX+b.h}};
+  let a=null,b=null;try{a=r("frente");b=r("frente2")}catch(e){}
+  if(!a||!b)return false;const g=1;
+  return a.x0<b.x1+g&&b.x0<a.x1+g&&a.y0<b.y1+g&&b.y0<a.y1+g;
+}
 function avisoTam(blk){
   const a=$("szAviso");let t="";
   if(blk&&(blk.h<.8||blk.w<2))t="Essa estampa está muito pequena: os detalhes podem se perder na impressão.";
   else if(blk&&blk.kind==="texto"&&blk.h/blk.lines.length<.7)t="A letra está bem pequena (menos de 7 mm). Aumente um pouco para ficar legível.";
+  if(!t&&colideFrente())t="As duas estampas da frente estão encostadas ou uma em cima da outra. Afaste uma da outra (mude a posição ou diminua o tamanho).";
   a.textContent=t;a.hidden=!t;
 }
 function atualizaPreco(){
-  const p=$("precoPill"),l=$("precoLinha"),ok=["frente","costas"].some(x=>S.ativo[x]);
+  const p=$("precoPill"),l=$("precoLinha"),ok=SLOTS.some(x=>S.ativo[x]);
   if(!ok){p.hidden=true;l.textContent="";return}
   const c=calcPreco();p.hidden=false;p.textContent="≈ "+brl(c.preco);
   l.textContent=`Valor estimado: ${brl(c.preco)}. O valor final é confirmado com você no WhatsApp.`;
@@ -1341,21 +1352,22 @@ function seloFolgado(c,cx,cy,_r){
   c.restore();
 }
 function printPos(blk,st){return {x:540+st.ox*PX-blk.w*PX/2,y:290+st.oy*PX}}
-function paintSide(c,lado,blk,st){drawShirt(c,lado);if(blk){const p=printPos(blk,st);c.save();c.translate(p.x,p.y);blk.draw(c,PX);c.restore()}}
+function paintSide(c,lado,blk,st){drawShirt(c,fisico(lado));if(blk){const p=printPos(blk,st);c.save();c.translate(p.x,p.y);blk.draw(c,PX);c.restore()}}
+function paintOthers(c,lado,except){SLOTS.forEach(sl=>{if(sl===except||fisico(sl)!==fisico(lado)||!S.ativo[sl])return;try{const st=dataOf(sl),b=printBlock(st);if(b){clampPos(st,b,sl);const p=printPos(b,st);c.save();c.translate(p.x,p.y);b.draw(c,PX);c.restore()}}catch(e){}})}
 const fmt=n=>(Math.round(n*10)/10).toString().replace(".",",");
 function draw(){
   const blk=S.ativo[S.edit]?printBlock(S):null;
-  if(blk)clampPos(S,blk);paintSide(ctx,S.edit,blk,S);
+  if(blk)clampPos(S,blk);paintSide(ctx,S.edit,blk,S);paintOthers(ctx,S.edit,S.edit);
   let info;
   if(!S.ativo[S.edit])info="sem estampa";
   else if(blk)info=`${fmt(blk.w)} × ${fmt(blk.h)} cm`;
   else info=S.aba==="imagem"?"falta a imagem":S.aba==="figura"?"falta a figura":"falta o texto";
-  const outro=S.edit==="frente"?"costas":"frente";
-  $("info").textContent=(S.edit==="frente"?"frente":"costas")+" · "+info;
+  const outros=SLOTS.filter(l=>l!==S.edit&&S.ativo[l]).map(l=>SLOT_ROT[l]);
+  $("info").textContent=SLOT_ROT[S.edit]+" · "+info;
   if(blk){const p=printPos(blk,S),x=p.x,y=p.y,w=blk.w*PX,h=blk.h*PX;ctx.save();ctx.setLineDash([10,8]);ctx.lineWidth=3;ctx.strokeStyle="rgba(226,116,43,.9)";ctx.strokeRect(x-6,y-6,w+12,h+12);ctx.setLineDash([]);ctx.beginPath();ctx.arc(x+w+6,y+h+6,17,0,7);ctx.fillStyle="#fff";ctx.fill();ctx.lineWidth=4;ctx.strokeStyle="#E2742B";ctx.stroke();ctx.beginPath();ctx.moveTo(x+w-1,y+h-1);ctx.lineTo(x+w+13,y+h+13);ctx.moveTo(x+w+13,y+h+3);ctx.lineTo(x+w+13,y+h+13);ctx.lineTo(x+w+3,y+h+13);ctx.stroke();ctx.restore()}
   if(typeof T3!=="undefined"&&T3.on){if(Date.now()<T3.hint)$("info").textContent="arraste para girar";refresh3D()}
   avisoTam(blk);atualizaPreco();
-  $("tamReal").textContent=(blk?`Tamanho real da estampa: ${fmt(blk.w)} × ${fmt(blk.h)} cm.`:"")+(S.ativo[outro]?` ${outro==="frente"?"A frente":"As costas"} também ${outro==="frente"?"leva":"levam"} estampa.`:"");$("posInfo").textContent=blk?posTexto(S,S.edit)+".":"";
+  $("tamReal").textContent=(blk?`Tamanho real da estampa: ${fmt(blk.w)} × ${fmt(blk.h)} cm.`:"")+(outros.length?` Também leva estampa: ${outros.join(", ")}.`:"");$("posInfo").textContent=blk?posTexto(S,S.edit)+".":"";
 }
 
 /* ===== Sincronia da interface ===== */
@@ -1366,8 +1378,8 @@ function sync(){contaTxt();
   {const L=limites(S);S.larg=Math.round(Math.max(L.min,Math.min(L.max,S.larg))*2)/2;uiTam(L)}
   press("g-modelo",S.modelo);press("g-cor",S.cor);press("g-aba",S.aba);press("g-lado",S.edit);renderPos();
   $("posWrap").hidden=false;
-  $("ativo").checked=!!S.ativo[S.edit];$("ativoTxt").textContent=S.edit==="frente"?"Estampar na frente":"Estampar nas costas";
-  $("ladoDica").textContent=S.edit==="frente"?"Você pode estampar só a frente, só as costas ou os dois. Cada lado tem a sua arte.":"As costas têm espaço para uma arte maior. A frente continua como você deixou.";
+  $("ativo").checked=!!S.ativo[S.edit];$("ativoTxt").textContent=S.edit==="frente"?"Estampar na frente":S.edit==="frente2"?"Estampar a 2ª arte na frente":"Estampar nas costas";
+  $("ladoDica").textContent=S.edit==="frente"?"Você pode ter até 2 artes na frente e 1 nas costas. Cada uma tem a sua configuração.":S.edit==="frente2"?"A 2ª arte da frente. Deixe um espaço entre as duas para não encostarem (por exemplo, uma no peito e outra mais embaixo).":"As costas têm espaço para uma arte maior (1 por camiseta). A frente continua como você deixou.";
   document.querySelectorAll("#g-lado [data-v]").forEach(b=>{b.dataset.on=S.ativo[b.dataset.v]?"1":"0"});
   renderTam();renderLarg();renderFontes();renderCores();
   $("p-texto").hidden=S.aba!=="texto";$("p-texto").style.display=S.aba==="texto"?"flex":"none";
@@ -1383,8 +1395,8 @@ function sync(){contaTxt();
     else if(dpi>=120){q.textContent="Qualidade boa para este tamanho";q.className="q good"}
     else{q.textContent="Qualidade baixa: pode sair borrada. Escolha um tamanho menor ou uma imagem maior.";q.className="q bad"}
   }
-  document.querySelectorAll(".side-toggle button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lado===S.edit)));
-  const lados=["frente","costas"].filter(l=>S.ativo[l]);
+  document.querySelectorAll(".side-toggle button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lado===fisico(S.edit))));
+  const lados=SLOTS.filter(l=>S.ativo[l]);
   $("aceiteRow").hidden=!lados.some(l=>dataOf(l).aba!=="figura");
   $("erro").hidden=true;$("res").hidden=true;
   draw();
@@ -1412,14 +1424,15 @@ function descreve(st,blk){
   return `texto "${st.texto.replace(/\n/g," / ")}" (letra ${FONTES[st.fonte].rot.toLowerCase()}, cor ${nomeCor(st)}${st.caixa?", maiúsculas":""})`;
 }
 $("finalizar").addEventListener("click",async()=>{
-  const lados=["frente","costas"].filter(l=>S.ativo[l]);
+  const lados=SLOTS.filter(l=>S.ativo[l]);
   if(!lados.length){showErr("Escolha onde estampar: frente, costas ou os dois.");return}
   const blocos={};
   for(const l of lados){
     const st=dataOf(l);await prepare(st);const b=printBlock(st);
-    if(!b){showErr(`${l==="frente"?"A frente":"As costas"} está marcada, mas ainda sem estampa. ${st.aba==="imagem"?"Envie uma imagem":st.aba==="figura"?"Escolha uma figura":"Escreva um texto"} ou desmarque esse lado.`);return}
+    if(!b){showErr(`${l==="costas"?"As costas estão":l==="frente2"?"A 2ª arte da frente está":"A frente está"} marcada, mas ainda sem estampa. ${st.aba==="imagem"?"Envie uma imagem":st.aba==="figura"?"Escolha uma figura":"Escreva um texto"} ou desmarque esse lado.`);return}
     blocos[l]=b;
   }
+  if(colideFrente()){showErr("As duas estampas da frente estão encostadas ou uma em cima da outra. Afaste uma da outra para a impressão sair certa.");return}
   const CK=window.FolgadoChk;let ckr=null;
   if(CK){ckr=CK.read("c-");if(!ckr.ok){showErr(ckr.err);const el=ckr.node||$("c-"+ckr.el);if(el){el.scrollIntoView({block:"center",behavior:"smooth"});el.focus&&el.focus({preventScroll:true})}return}}
   else if(!$("nome").value.trim()){showErr("Diga seu nome para a gente saber com quem fala.");$("nome").focus();return}
@@ -1431,15 +1444,15 @@ $("finalizar").addEventListener("click",async()=>{
   const addDown=(url,nome,rot)=>{const a=document.createElement("a");a.className="btn2";a.href=url;a.download=nome;a.textContent=rot;downs.append(a)};
   for(const l of lados){
     const st=dataOf(l),blk=blocos[l],isModel=blk.kind==="modelo";clampPos(st,blk,l);
-    const prev=document.createElement("canvas");prev.width=1080;prev.height=1350;paintSide(prev.getContext("2d"),l,blk,st);
+    const prev=document.createElement("canvas");prev.width=1080;prev.height=1350;paintSide(prev.getContext("2d"),l,blk,st);paintOthers(prev.getContext("2d"),l,l);
     if(blk.hires)await blk.hires(Math.min(4000,Math.ceil(blk.w*300/2.54)));
     const pc=isModel?null:printCanvas(blk);
     const prevUrl=prev.toDataURL("image/jpeg",.9);let printUrl="",printBlob=null;if(pc){const rr=await pngDpi(pc,300);printUrl=rr.url;printBlob=rr.blob}
     const nm=`folgado-estampa-${l}-${fmt(blk.w).replace(",","_")}cm`;
-    ups.push({nome:`previa-${l}.jpg`,dataUrl:prevUrl});if(printUrl)ups.push({nome:`estampa-${l}-${fmt(blk.w).replace(",","_")}cm.png`,dataUrl:printUrl});addFig(prevUrl,`Prévia · ${l}`,false);addDown(prevUrl,`folgado-previa-${l}.jpg`,`Baixar prévia (${l})`);
-    if(pc){addFig(printUrl,`Estampa da ${l}, tamanho real`,true);addDown(printUrl,`${nm}.png`,`Baixar estampa (${l})`)}
+    ups.push({nome:`previa-${l}.jpg`,dataUrl:prevUrl});if(printUrl)ups.push({nome:`estampa-${l}-${fmt(blk.w).replace(",","_")}cm.png`,dataUrl:printUrl});addFig(prevUrl,`Prévia · ${SLOT_ROT[l]}`,false);addDown(prevUrl,`folgado-previa-${l}.jpg`,`Baixar prévia (${SLOT_ROT[l]})`);
+    if(pc){addFig(printUrl,`Estampa · ${SLOT_ROT[l]}, tamanho real`,true);addDown(printUrl,`${nm}.png`,`Baixar estampa (${SLOT_ROT[l]})`)}
     try{const b1=await toBlob(prev,"image/jpeg",.9);files.push(new File([b1],`folgado-previa-${l}.jpg`,{type:"image/jpeg"}));if(pc&&printBlob)files.push(new File([printBlob],`${nm}.png`,{type:"image/png"}))}catch(e){}
-    rows.push([`Estampa ${l==="frente"?"na frente":"nas costas"}`,`${descreve(st,blk)} · ${fmt(blk.w)} × ${fmt(blk.h)} cm · ${posTexto(st,l)}`]);
+    rows.push([`Estampa ${SLOT_NOME[l]}`,`${descreve(st,blk)} · ${fmt(blk.w)} × ${fmt(blk.h)} cm · ${posTexto(st,l)}`]);
   }
   {const c=calcPreco();rows.push(["Valor estimado",brl(c.preco)+" (a confirmar no WhatsApp)"])}rows.push(["Selo Folgado","logo da Folgado (rede) na barra das costas, já incluso"]);const designRows=rows.slice();const oid=CK?CK.id():"";if(CK)CK.rows(ckr.d,oid).forEach(r=>rows.push(r));else rows.push(["Nome",$("nome").value.trim()]);const obs=$("obs").value.trim();if(obs)rows.push(["Observação",obs]);
   const sum=$("sum");sum.innerHTML="";rows.forEach(([k,v])=>{const dt=document.createElement("dt");dt.textContent=k;const dd=document.createElement("dd");dd.textContent=v;sum.append(dt,dd)});
@@ -1469,7 +1482,7 @@ $("btnShare").addEventListener("click",async()=>{try{await navigator.share({file
 
 /* ===== Limpar ===== */
 function limpaLado(){const n=novoLado(S.edit);SIDE_FIELDS.forEach(k=>S[k]=n[k]);$("txt").value=S.texto;$("busca").value=S.q;$("caixa").checked=S.caixa;$("semFundo").checked=S.semFundo;$("arq").value="";S.ativo[S.edit]=true}
-function recomecar(){if(S.edit!=="frente")trocaLado("frente");limpaLado();SAVED.costas=novoLado("costas");S.ativo.frente=true;S.ativo.costas=false}
+function recomecar(){if(S.edit!=="frente")trocaLado("frente");limpaLado();SAVED.costas=novoLado("costas");SAVED.frente2=novoLado("frente2");S.ativo.frente=true;S.ativo.frente2=false;S.ativo.costas=false}
 $("btnLimpaLado").addEventListener("click",()=>{limpaLado();sync()});
 {let t;const b=$("btnRecomeca"),lab=b.textContent;b.addEventListener("click",()=>{if(b.dataset.ask){clearTimeout(t);delete b.dataset.ask;b.textContent=lab;recomecar();sync();return}b.dataset.ask="1";b.textContent="Toque de novo para confirmar";t=setTimeout(()=>{delete b.dataset.ask;b.textContent=lab},3500)})}
 
@@ -1543,7 +1556,7 @@ function weaveTex(THREE){
 function printLayer(lado){
   const k=1.5,c=document.createElement("canvas");c.width=1080*k;c.height=1350*k;const g=c.getContext("2d");g.scale(k,k);
   try{
-    if(S.ativo[lado]){const st=dataOf(lado),blk=printBlock(st);if(blk){clampPos(st,blk,lado);const p=printPos(blk,st);g.save();g.translate(p.x,p.y);blk.draw(g,PX);g.restore()}}
+    SLOTS.forEach(sl=>{if(fisico(sl)===lado&&S.ativo[sl]){const st=dataOf(sl),blk=printBlock(st);if(blk){clampPos(st,blk,sl);const p=printPos(blk,st);g.save();g.translate(p.x,p.y);blk.draw(g,PX);g.restore()}}});
     if(lado==="costas")seloFolgado(g,540,GEO[S.modelo].hem-5.4*PX);
   }catch(e){}
   return c;
