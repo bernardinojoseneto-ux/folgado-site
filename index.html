@@ -544,8 +544,9 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
           <p class="hint cntrow"><span>Até 3 linhas (Enter troca de linha).</span><b id="txtCnt" class="cnt" aria-live="polite"></b></p>
         </div>
         <div>
-          <span class="lab">Ideias para começar</span>
-          <div class="row" id="g-ideias"></div>
+          <span class="lab">Emojis</span>
+          <div class="row" id="g-emoji" style="gap:6px"></div>
+          <p class="hint">Toque para colocar no texto. Eles saem coloridos na estampa.</p>
         </div>
         <div>
           <span class="lab">Letra</span>
@@ -730,11 +731,7 @@ const CATALOGO = [{"id": "28-coroa-de-espinhos", "nome": "coroa de espinhos", "f
 /* ===== Configuração da loja ===== */
 const WHATSAPP = FOLGADO.whatsapp;          // número com DDI+DDD, só dígitos. ex.: "5585999999999"
 const TAMANHOS = ["P","M","G","GG"];
-const IDEIAS = [
-  ["Frases","hoje não tem pressa.","segunda é só um nome.","o relógio que espere.","dia de folga, todo dia","sem pressa, sem culpa","só mais 5 minutinhos"],
-  ["Família e grupos","Família Silva","Turma 2026","Tio Zé","Equipe da firma","Aniversário do Pedro"],
-  ["Presentes","Papai","Mamãe","Vovó","melhor amigo","feito com carinho"]
-];
+const EMOJIS=["😎","😴","😅","🤙","🙏","❤️","🧡","💛","🖤","🤍","🔥","✨","⭐","☀️","🌴","🌊","🥥","🍉","☕","⚽","🎉","🏖️","🛶","🦀"];
 const MAXH = 40;   // altura máxima da estampa, em cm
 const TAMS = {frente:[7,9,12,20,28], costas:[12,20,25,30]};   // larguras pré-definidas (cm)
 const LARG_ROT = {7:"mini",9:"discreta",12:"pequena",20:"média",25:"grande",28:"grande",30:"extra grande"};
@@ -772,7 +769,7 @@ const _MP0b="i/26eb63f4de.png";const _MP1b="i/773cee4fca.png";const _MP2b="i/d6d
 const MODELOS=[{"id": "folgado-28-coroa-de-espinhos", "n": "coroa de espinhos", "t": "Modelos Folgado", "k": "folgado modelo pronto pré-aprovado fé cruz coroa espinhos cristão religioso jesus coroa de espinhos", "w": 800, "h": 360, "preta": "i/048f69b8ef.png", "branca": "i/80eec01e5c.png"},{"id": "folgado-29-fantasma-bone", "n": "fantasma de boné", "t": "Modelos Folgado", "k": "folgado modelo pronto pré-aprovado fantasma boné halloween caveira humor fantasma de boné", "w": 800, "h": 993, "preta": "i/d3ab430a0a.png", "branca": "i/d3ab430a0a.png"},{"id": "folgado-30-van-surf", "n": "van de surf", "t": "Modelos Folgado", "k": "folgado modelo pronto pré-aprovado van kombi surf prancha praia estrada verão van de surf", "w": 800, "h": 563, "preta": "i/25fa2ade5b.png", "branca": "i/bbf1fa33f3.png"},{"id": "folgado-31-prancha-surf", "n": "prancha dia e noite", "t": "Modelos Folgado", "k": "folgado modelo pronto pré-aprovado prancha surf mar onda praia dia noite estrelas prancha dia e noite", "w": 800, "h": 1022, "preta": "i/6ae71a0b55.png", "branca": "i/6ae71a0b55.png"},{"id": "folgado-32-vespa-palmeiras", "n": "vespa e palmeiras", "t": "Modelos Folgado", "k": "folgado modelo pronto pré-aprovado vespa lambreta scooter palmeira coqueiro sol praia verão vespa e palmeiras", "w": 800, "h": 863, "preta": "i/6078ead56b.png", "branca": "i/6078ead56b.png"},{"id": "folgado-33-praia-digital", "n": "praia na digital", "t": "Modelos Folgado", "k": "folgado modelo pronto pré-aprovado digital impressão digital praia coqueiro mar pôr do sol verão praia na digital", "w": 800, "h": 1306, "preta": "i/714d6bc260.png", "branca": "i/714d6bc260.png"},{"id":"folgado-21-jj-caveira-guarda","n":"jiu-jitsu caveira","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado esporte esportes luta jiu-jitsu caveira","w":800,"h":462,"preta":_SP0p,"branca":_SP0b},{"id":"folgado-22-jj-suave-arte","n":"suave arte","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado esporte esportes luta suave arte","w":800,"h":1157,"preta":_SP1p,"branca":_SP1b},{"id":"folgado-23-jj-faixa-kanji","n":"jiu-jitsu faixa","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado esporte esportes luta jiu-jitsu faixa","w":800,"h":166,"preta":_SP2p,"branca":_SP2b},{"id":"folgado-24-jj-lutador","n":"jiu-jitsu clássico","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado esporte esportes luta jiu-jitsu clássico","w":800,"h":773,"preta":_SP3p,"branca":_SP3b},{"id":"folgado-25-karate-tinta","n":"karatê tinta","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado esporte esportes luta karatê tinta","w":800,"h":817,"preta":_SP4p,"branca":_SP4b},{"id":"folgado-26-karate-chute-alto","n":"karatê chute alto","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado esporte esportes luta karatê chute alto","w":800,"h":1030,"preta":_SP5p,"branca":_SP5b},{"id":"folgado-27-corrida-batimento","n":"corrida no pulso","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado esporte esportes luta corrida no pulso","w":800,"h":265,"preta":_SP6p,"branca":_SP6b},{"id":"folgado-16-capivara-skate","n":"capivara skate","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado capivara skate","w":800,"h":774,"preta":_MP0b,"branca":_MP0b},{"id":"folgado-17-capivara-banho","n":"capivara no banho","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado capivara no banho","w":800,"h":388,"preta":_MP1b,"branca":_MP1b},{"id":"folgado-18-caveira-bombada","n":"caveira bombada","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado caveira bombada","w":800,"h":378,"preta":_MP2p,"branca":_MP2b},{"id":"folgado-19-galo-folgado","n":"galo folgado","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado galo folgado","w":800,"h":907,"preta":_MP3b,"branca":_MP3b},{"id":"folgado-20-urso-de-role","n":"urso de rolê","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado urso de rolê","w":800,"h":1334,"preta":_MP4b,"branca":_MP4b},{"id":"folgado-01-caju","n":"caju","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado caju","w":800,"h":559,"preta":"i/364218d7c8.png","branca":"i/61f24b14e8.png"},{"id":"folgado-02-sol-sorridente","n":"sol sorridente","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado sol sorridente","w":800,"h":650,"preta":"i/ca01ca04c0.png","branca":"i/fcd68a8b08.png"},{"id":"folgado-03-jangada","n":"jangada","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado jangada","w":800,"h":801,"preta":"i/662976b159.png","branca":"i/5886a275b0.png"},{"id":"folgado-04b-fita-costas","n":"rebobina","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado rebobina","w":800,"h":669,"preta":"i/966a2aeed3.png","branca":"i/805eb2583a.png"},{"id":"folgado-05-caracol-sem-pressa","n":"sem pressa","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado sem pressa","w":800,"h":474,"preta":"i/82b00a3ce9.png","branca":"i/452ea3d7f4.png"},{"id":"folgado-07-friozinho-32","n":"friozinho 32°C","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado friozinho 32°C","w":800,"h":461,"preta":"i/4f131a8096.png","branca":"i/a6b862f48f.png"},{"id":"folgado-08-por-do-sol-costas","n":"tudo no seu tempo","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado tudo no seu tempo","w":800,"h":413,"preta":"i/0834219687.png","branca":"i/35a638974d.png"},{"id":"folgado-09-cruz-grande-costas","n":"cruz","t":"Modelos Folgado","k":"folgado modelo pronto pré-aprovado cruz","w":800,"h":1421,"preta":"i/a51f48dd1c.png","branca":"i/d196381c7d.png"}];
 /* ===== Estado: a frente e as costas têm cada uma a sua estampa ===== */
 const SIDE_FIELDS=["pack","campos","acc","aba","texto","fonte","caixa","corTxt","fig","esp","q","tema","nfig","ox","oy","larg","img","imgNome","semFundo","natW","raw"];
-function novoLado(l){return {pack:"Figurinhas",campos:{},acc:"#E2742B",aba:"texto",texto:l==="frente"?"hoje não tem pressa.":"",fonte:"fraunces",caixa:false,corTxt:CORES.preta[0][1],fig:null,esp:2.2,q:"",tema:"Todos",nfig:36,
+function novoLado(l){return {pack:"Modelos Folgado",campos:{},acc:"#E2742B",aba:"texto",texto:l==="frente"?"hoje não tem pressa.":"",fonte:"fraunces",caixa:false,corTxt:CORES.preta[0][1],fig:null,esp:2.2,q:"",tema:"Todos",nfig:36,
   ox:0,oy:l==="frente"?14:l==="frente2"?30:10,larg:l==="frente"?12:l==="frente2"?9:25,img:null,imgNome:"",semFundo:false,natW:0,raw:null}}
 const SLOTS=["frente","frente2","costas"],fisico=l=>l==="costas"?"costas":"frente",SLOT_NOME={frente:"na frente",frente2:"na frente (2ª estampa)",costas:"nas costas"},SLOT_ROT={frente:"frente",frente2:"frente (2ª)",costas:"costas"};
 const S={modelo:"oversized",cor:"preta",tam:"M",edit:"frente",ativo:{frente:true,frente2:false,costas:false},bloq:null,...novoLado("frente")};
@@ -813,7 +810,7 @@ function posTexto(st,l){
 }
 function renderFontes(){const g=$("g-fonte");g.innerHTML="";Object.entries(FONTES).forEach(([k,f])=>g.append(mkBtn("fontbtn",`<span style="font-family:${FAM[k]}">${f.sample}</span><small>${f.rot}</small>`,k,S.fonte===k)))}
 function renderCores(){["g-corTxt","g-corFig"].forEach(id=>{const g=$(id);g.innerHTML="";CORES[S.cor].forEach(([n,h])=>{const b=mkBtn("swatch","",h,S.corTxt===h);b.style.background=h;b.title=n;b.setAttribute("aria-label",n);g.append(b)})})}
-function renderIdeias(){const g=$("g-ideias");g.innerHTML="";IDEIAS.forEach(([t,...xs])=>{const l=document.createElement("span");l.className="hint";l.style.cssText="width:100%;margin:6px 0 0";l.textContent=t;g.append(l);xs.forEach(x=>g.append(mkBtn("chip",x,x,false)))})}
+function renderEmojis(){const g=$("g-emoji");g.innerHTML="";EMOJIS.forEach(x=>{const b=mkBtn("chip",x,x,false);b.style.cssText="font-size:22px;padding:6px 10px;min-width:46px";b.setAttribute("aria-label","Inserir emoji "+x);g.append(b)})}
 function corValida(st){if(!CORES[S.cor].some(c=>c[1]===st.corTxt))st.corTxt=CORES[S.cor][0][1]}
 group("g-modelo","modelo");
 group("g-cor","cor",()=>{corValida(S);Object.keys(SAVED).forEach(k=>corValida(SAVED[k]))});
@@ -852,7 +849,7 @@ $("szr").addEventListener("input",e=>setLarg(+e.target.value,false));
 $("szr").addEventListener("change",e=>setLarg(+e.target.value,true));
 $("szn").addEventListener("input",e=>{const v=parseFloat(String(e.target.value).replace(",","."));if(isFinite(v)){const L=limites(S);S.larg=Math.max(L.min,Math.min(L.max,v));$("szr").value=S.larg;draw();renderLarg()}});
 $("szn").addEventListener("change",e=>{const v=parseFloat(String(e.target.value).replace(",","."));setLarg(isFinite(v)?v:S.larg,true)});
-$("g-ideias").addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(!b)return;S.texto=b.dataset.v.slice(0,22);$("txt").value=S.texto;sync()});
+$("g-emoji").addEventListener("click",e=>{const b=e.target.closest("button[data-v]");if(!b)return;const t=$("txt"),e0=b.dataset.v,L=t.maxLength>0?t.maxLength:22;if((t.value||"").length+e0.length>L)return;const a=t.selectionStart==null?t.value.length:t.selectionStart,z=t.selectionEnd==null?a:t.selectionEnd;t.value=t.value.slice(0,a)+e0+t.value.slice(z);const p=a+e0.length;try{t.setSelectionRange(p,p)}catch(x){}S.texto=t.value;sync()});
 $("txt").addEventListener("input",e=>{S.texto=e.target.value;sync()});
 $("caixa").addEventListener("change",e=>{S.caixa=e.target.checked;sync()});
 $("semFundo").addEventListener("change",e=>{S.semFundo=e.target.checked;buildImg();sync()});
@@ -888,13 +885,13 @@ function buildImg(st=S){
 /*PACKS*/
 /* ===== PACKS DE ESTAMPAS (desenhos próprios da Folgado, feitos por código) ===== */
 const PACKS=[
- {id:"Figurinhas",desc:"Ícones simples para estampar sozinhos. Procure por palavra ou escolha um tema."},
  {id:"Modelos Folgado",desc:"As estampas das nossas camisetas, prontas para usar."},
  {id:"Letras em pé",desc:"Palavras na vertical, com caixa de cor. Você troca as palavras."},
  {id:"Linha fina",desc:"Traço fino e letras espaçadas: discreto. Tem assinatura vertical para as costas."},
  {id:"Fé",desc:"Símbolos em traço fino, desenhados pela Folgado."},
  {id:"Raiz do Nordeste",desc:"Desenhos em estilo xilogravura, com humor de casa."},
- {id:"Cor viva",desc:"Estampas alegres, com cores misturadas. Ficam bem na preta e na branca."}
+ {id:"Cor viva",desc:"Estampas alegres, com cores misturadas. Ficam bem na preta e na branca."},
+ {id:"Figurinhas",desc:"Ícones simples para estampar sozinhos. Procure por palavra ou escolha um tema."}
 ];
 const ACCS=[["Laranja","#E2742B"],["Vermelho","#D8402B"],["Amarelo","#F4B63F"],["Verde-água","#2FA58F"],["Rosa","#F07A9A"],["Azul","#2D5FB5"]];
 const lumHex=h=>{const n=parseInt(h.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;return(.299*r+.587*g+.114*b)/255};
@@ -1659,7 +1656,7 @@ document.querySelector(".side-toggle").addEventListener("click",e=>{const b=e.ta
 
 /* ===== Início ===== */
 $("txt").value=S.texto;
-renderIdeias();sync();
+renderEmojis();sync();
 Promise.all(Object.values(FONTES).map(f=>document.fonts.load(f.css,"Aa áé ç"))).then(()=>{for(const k in thumbC)delete thumbC[k];sync()}).catch(()=>{});
 
 </script>
