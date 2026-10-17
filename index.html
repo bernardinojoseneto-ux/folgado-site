@@ -541,9 +541,12 @@ input[type=search]{width:100%;border:1.5px solid var(--line);border-radius:14px;
         <div>
           <label class="lab" for="txt">Seu texto</label>
           <textarea id="txt" maxlength="22" rows="2" placeholder="escreva aqui" aria-describedby="txtCnt"></textarea>
-          <p class="hint cntrow"><span>Até 3 linhas (Enter troca de linha).</span><b id="txtCnt" class="cnt" aria-live="polite"></b></p>
+          <p class="hint cntrow"><span>Até 3 linhas. Use o botão ↵ para quebrar a linha.</span><b id="txtCnt" class="cnt" aria-live="polite"></b></p>
         </div>
         <div>
+          <span class="lab">Quebra de linha</span>
+          <div class="row"><button type="button" class="chip" id="btnBr" style="font-weight:700">↵ Quebrar linha aqui</button></div>
+          <p class="hint" id="brHint" style="margin-bottom:14px"></p>
           <span class="lab">Emojis</span>
           <div class="row" id="g-emoji" style="gap:6px"></div>
           <p class="hint">Toque para colocar no texto. Eles saem coloridos na estampa.</p>
@@ -810,6 +813,8 @@ function posTexto(st,l){
 }
 function renderFontes(){const g=$("g-fonte");g.innerHTML="";Object.entries(FONTES).forEach(([k,f])=>g.append(mkBtn("fontbtn",`<span style="font-family:${FAM[k]}">${f.sample}</span><small>${f.rot}</small>`,k,S.fonte===k)))}
 function renderCores(){["g-corTxt","g-corFig"].forEach(id=>{const g=$(id);g.innerHTML="";CORES[S.cor].forEach(([n,h])=>{const b=mkBtn("swatch","",h,S.corTxt===h);b.style.background=h;b.title=n;b.setAttribute("aria-label",n);g.append(b)})})}
+function brEstado(){const t=$("txt"),n=(t.value||"").split("\n").length,b=$("btnBr");if(!b)return;const L=t.maxLength>0?t.maxLength:22,cheio=n>=3||(t.value||"").length>=L;b.disabled=cheio;b.style.opacity=cheio?".45":"1";$("brHint").textContent=n>=3?"Você já está na 3ª linha, o máximo.":"Toque onde quer cortar o texto: o resto desce para a linha de baixo. Agora: linha "+n+" de 3."}
+$("btnBr").addEventListener("click",()=>{const t=$("txt"),L=t.maxLength>0?t.maxLength:22;if((t.value||"").split("\n").length>=3||(t.value||"").length+1>L)return;const a=t.selectionStart==null?t.value.length:t.selectionStart,z=t.selectionEnd==null?a:t.selectionEnd;t.value=t.value.slice(0,a)+"\n"+t.value.slice(z);const p=a+1;t.focus();try{t.setSelectionRange(p,p)}catch(x){}S.texto=t.value;sync()});
 function renderEmojis(){const g=$("g-emoji");g.innerHTML="";EMOJIS.forEach(x=>{const b=mkBtn("chip",x,x,false);b.style.cssText="font-size:22px;padding:6px 10px;min-width:46px";b.setAttribute("aria-label","Inserir emoji "+x);g.append(b)})}
 function corValida(st){if(!CORES[S.cor].some(c=>c[1]===st.corTxt))st.corTxt=CORES[S.cor][0][1]}
 group("g-modelo","modelo");
@@ -1384,7 +1389,7 @@ function draw(){
 
 /* ===== Sincronia da interface ===== */
 function press(id,key){[...$(id).querySelectorAll("[data-v]")].forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===String(key))))}
-function contaTxt(){const n=($("txt").value||"").length,L=22,c=$("txtCnt");if(!c)return;c.textContent=n>=L?`${n} de ${L} · limite atingido`:`${n} de ${L} · faltam ${L-n}`;c.classList.toggle("cheio",n>=L)}
+function contaTxt(){try{brEstado()}catch(e){}const n=($("txt").value||"").length,L=22,c=$("txtCnt");if(!c)return;c.textContent=n>=L?`${n} de ${L} · limite atingido`:`${n} de ${L} · faltam ${L-n}`;c.classList.toggle("cheio",n>=L)}
 function contaCampo(i){const c=i.parentNode.querySelector(".cnt"),L=+c.dataset.mx,n=i.value.length;c.textContent=n>=L?`${n} de ${L} · limite atingido`:`${n} de ${L} · faltam ${L-n}`;c.classList.toggle("cheio",n>=L)}
 function sync(){contaTxt();
   {const L=limites(S);S.larg=Math.round(Math.max(L.min,Math.min(L.max,S.larg))*2)/2;uiTam(L)}
